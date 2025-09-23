@@ -1,5 +1,5 @@
 def main():
-    print("Hello from multi-trip-cloud!")
+    print("Hello from py-solana-pay!")
 
 
 if __name__ == "__main__":

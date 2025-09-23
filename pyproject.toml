@@ -1,23 +1,23 @@
 [project]
-name = "multi-trip-cloud"
+name = "py-solana-pay"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
-    { name = "liuzhen19", email = "liuzhen19@xiaomi.com" }
+    { name = "lzhen.dev", email = "lzhen.dev@outlook.com" }
 ]
 requires-python = ">=3.10"
 dependencies = [
     "rootutils>=1.0.7",
 ]
 
-[project.scripts]
-multi-trip-cloud = "multi_trip_cloud:main"
+# [project.scripts]
+# py-solana-pay = "multi_trip_cloud:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [[tool.uv.index]]
-url = "https://pkgs.d.xiaomi.net/artifactory/api/pypi/pypi-virtual/simple"
+url = "https://mirrors.cernet.edu.cn/pypi/web/simple"
 default = true
