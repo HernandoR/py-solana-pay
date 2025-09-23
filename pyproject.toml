@@ -24,8 +24,9 @@ dependencies = [
     "email-validator>=2.1.0",
 ]
 
-# [project.scripts]
-# py-solana-pay = "multi_trip_cloud:main"
+[project.scripts]
+py-solana-pay = "py_solana_pay:main"
+solana-pay-cli = "py_solana_pay.cli:main"
 
 [build-system]
 requires = ["hatchling"]
