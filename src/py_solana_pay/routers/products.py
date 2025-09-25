@@ -62,7 +62,7 @@ async def get_product(product_id: int, db: Session = db_dependency):
 async def create_product(
     product: ProductCreate,
     db: Session = db_dependency,
-    current_user = current_user_dependency,
+    current_user=current_user_dependency,
 ):
     """Create new product (authenticated users only)"""
     db_product = Product(**product.dict())
@@ -77,7 +77,7 @@ async def update_product(
     product_id: int,
     product_update: ProductUpdate,
     db: Session = db_dependency,
-    current_user = current_user_dependency,
+    current_user=current_user_dependency,
 ):
     """Update product (authenticated users only)"""
     product = db.query(Product).filter(Product.id == product_id).first()
@@ -97,7 +97,7 @@ async def update_product(
 async def delete_product(
     product_id: int,
     db: Session = db_dependency,
-    current_user = current_user_dependency,
+    current_user=current_user_dependency,
 ):
     """Delete product (authenticated users only)"""
     product = db.query(Product).filter(Product.id == product_id).first()

@@ -67,7 +67,9 @@ async def create_checkout_session(
             }
 
     except httpx.HTTPError as e:
-        raise HTTPException(status_code=500, detail=f"Payment provider error: {str(e)}") from e
+        raise HTTPException(
+            status_code=500, detail=f"Payment provider error: {str(e)}"
+        ) from e
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Checkout session creation failed: {str(e)}"

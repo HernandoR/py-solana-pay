@@ -19,6 +19,37 @@ router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
+# Dependency injection variables
+db_dependency = Depends(get_db)
+oauth2_dependency = Depends(oauth2_scheme)
+oauth2_form_dependency = Depends(OAuth2PasswordRequestForm)
+
+
+async def get_current_user(
+    token: str = oauth2_dependency,
+    db: Session = db_dependency,
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError as e:
+        raise credentials_exception from e
+    user = get_user(db, username=token_data.username)
+    if user is None:
+        raise credentials_exception
+    return user
+
+
+current_user_dependency = Depends(get_current_user)
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -83,38 +114,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-async def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
-    user = get_user(db, username=token_data.username)
-    if user is None:
-        raise credentials_exception
-    return user
-
-
-# Dependency injection variables  
-db_dependency = Depends(get_db)
-oauth2_dependency = Depends(oauth2_scheme)
-oauth2_form_dependency = Depends(OAuth2PasswordRequestForm)
-current_user_dependency = Depends(get_current_user)
-
-
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = oauth2_form_dependency, db: Session = db_dependency
+    form_data: OAuth2PasswordRequestForm = oauth2_form_dependency,
+    db: Session = db_dependency,
 ):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:

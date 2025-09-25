@@ -133,7 +133,7 @@ def main():
 
     # 2. Login
     print("\n2. Logging in...")
-    token = client.login("demo_user", "secure_password123")
+    token = client.login("demo_user", "secure_password123")  # noqa
     print("✅ Logged in successfully")
 
     # 3. Create a product

@@ -16,7 +16,6 @@ def main():
         # Run server
         import uvicorn
 
-
         print("🔥 py-solana-pay Server")
         print("💰 Python implementation of Solana-Pay")
         print("🚀 Starting at http://localhost:8000")
