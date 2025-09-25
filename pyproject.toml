@@ -1,7 +1,7 @@
 [project]
 name = "py-solana-pay"
 version = "0.1.0"
-description = "Add your description here"
+description = "Python implementation of Solana-Pay - A blockchain payment system built on the Solana platform"
 readme = "README.md"
 authors = [
     { name = "lzhen.dev", email = "lzhen.dev@outlook.com" }
@@ -9,10 +9,24 @@ authors = [
 requires-python = ">=3.10"
 dependencies = [
     "rootutils>=1.0.7",
+    "fastapi>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
+    "sqlalchemy>=2.0.23",
+    "alembic>=1.13.0",
+    "pydantic>=2.5.0",
+    "python-multipart>=0.0.6",
+    "passlib[bcrypt]>=1.7.4",
+    "python-jose[cryptography]>=3.3.0",
+    "solana>=0.34.0",
+    "httpx>=0.25.2",
+    "pydantic-settings>=2.1.0",
+    "qrcode[pil]>=7.4.2",
+    "email-validator>=2.1.0",
 ]
 
-# [project.scripts]
-# py-solana-pay = "multi_trip_cloud:main"
+[project.scripts]
+py-solana-pay = "py_solana_pay:main"
+solana-pay-cli = "py_solana_pay.cli:main"
 
 [build-system]
 requires = ["hatchling"]
