@@ -12,6 +12,10 @@ from .auth import get_current_user
 
 router = APIRouter()
 
+# Dependency injection variables
+db_dependency = Depends(get_db)
+current_user_dependency = Depends(get_current_user)
+
 
 class AccountResponse(BaseModel):
     username: str
@@ -30,14 +34,14 @@ class AccountUpdate(BaseModel):
 
 
 @router.get("/", response_model=List[AccountResponse])
-async def get_accounts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def get_accounts(skip: int = 0, limit: int = 100, db: Session = db_dependency):
     """Get all accounts (admin only)"""
     accounts = db.query(Account).offset(skip).limit(limit).all()
     return accounts
 
 
 @router.get("/{username}", response_model=AccountResponse)
-async def get_account(username: str, db: Session = Depends(get_db)):
+async def get_account(username: str, db: Session = db_dependency):
     """Get account by username"""
     account = db.query(Account).filter(Account.username == username).first()
     if account is None:
@@ -49,8 +53,8 @@ async def get_account(username: str, db: Session = Depends(get_db)):
 async def update_account(
     username: str,
     account_update: AccountUpdate,
-    db: Session = Depends(get_db),
-    current_user: Account = Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user: Account = current_user_dependency,
 ):
     """Update account information"""
     # Users can only update their own account

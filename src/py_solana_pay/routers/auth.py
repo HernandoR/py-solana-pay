@@ -105,9 +105,16 @@ async def get_current_user(
     return user
 
 
+# Dependency injection variables  
+db_dependency = Depends(get_db)
+oauth2_dependency = Depends(oauth2_scheme)
+oauth2_form_dependency = Depends(OAuth2PasswordRequestForm)
+current_user_dependency = Depends(get_current_user)
+
+
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = oauth2_form_dependency, db: Session = db_dependency
 ):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -124,7 +131,7 @@ async def login_for_access_token(
 
 
 @router.post("/register", response_model=UserResponse)
-async def register_user(user: UserCreate, db: Session = Depends(get_db)):
+async def register_user(user: UserCreate, db: Session = db_dependency):
     # Check if user already exists
     db_user = get_user(db, user.username)
     if db_user:
@@ -152,5 +159,5 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/me", response_model=UserResponse)
-async def read_users_me(current_user: Account = Depends(get_current_user)):
+async def read_users_me(current_user: Account = current_user_dependency):
     return current_user

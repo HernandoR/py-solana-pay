@@ -20,12 +20,16 @@ from .auth import get_current_user
 
 router = APIRouter()
 
+# Dependency injection variables
+db_dependency = Depends(get_db)
+current_user_dependency = Depends(get_current_user)
+
 
 @router.post("/session", response_model=Dict[str, str])
 async def create_checkout_session(
     request_data: Dict[str, Any],
-    db: Session = Depends(get_db),
-    current_user: Account = Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user: Account = current_user_dependency,
 ):
     """Create a checkout session with CandyPay"""
 
@@ -73,8 +77,8 @@ async def create_checkout_session(
 @router.post("/payment-url", response_model=PaymentUrlResponse)
 async def create_payment_url(
     payment_request: PaymentRequest,
-    db: Session = Depends(get_db),
-    current_user: Account = Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user: Account = current_user_dependency,
 ):
     """Generate Solana payment URL with QR code"""
 
@@ -113,8 +117,8 @@ async def create_payment_url(
 @router.post("/verify-payment", response_model=PaymentVerificationResponse)
 async def verify_payment(
     verification_request: PaymentVerificationRequest,
-    db: Session = Depends(get_db),
-    current_user: Account = Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user: Account = current_user_dependency,
 ):
     """Verify Solana payment signature"""
 
@@ -156,7 +160,7 @@ async def verify_payment(
 
 @router.get("/balance/{address}")
 async def get_wallet_balance(
-    address: str, current_user: Account = Depends(get_current_user)
+    address: str, current_user: Account = current_user_dependency
 ):
     """Get SOL balance for a wallet address"""
 

@@ -14,6 +14,10 @@ from .auth import get_current_user
 
 router = APIRouter()
 
+# Dependency injection variables
+db_dependency = Depends(get_db)
+current_user_dependency = Depends(get_current_user)
+
 
 class TransactionBase(BaseModel):
     transaction_type: str
@@ -37,8 +41,8 @@ class TransactionResponse(TransactionBase):
 async def get_transactions(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
-    current_user: Account = Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user: Account = current_user_dependency,
 ):
     """Get user's transactions"""
     transactions = (
@@ -55,8 +59,8 @@ async def get_transactions(
 async def get_all_transactions(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
-    current_user: Account = Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user: Account = current_user_dependency,
 ):
     """Get all transactions (admin only - for now just returns user's transactions)"""
     # TODO: Add admin role check
@@ -67,8 +71,8 @@ async def get_all_transactions(
 @router.get("/{transaction_id}", response_model=TransactionResponse)
 async def get_transaction(
     transaction_id: int,
-    db: Session = Depends(get_db),
-    current_user: Account = Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user: Account = current_user_dependency,
 ):
     """Get transaction by ID"""
     transaction = (
@@ -91,8 +95,8 @@ async def get_transaction(
 @router.post("/", response_model=TransactionResponse)
 async def create_transaction(
     transaction: TransactionCreate,
-    db: Session = Depends(get_db),
-    current_user: Account = Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user: Account = current_user_dependency,
 ):
     """Create new transaction"""
     db_transaction = Transaction(

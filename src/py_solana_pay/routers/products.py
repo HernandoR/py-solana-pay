@@ -12,6 +12,10 @@ from .auth import get_current_user
 
 router = APIRouter()
 
+# Dependency injection variables
+db_dependency = Depends(get_db)
+current_user_dependency = Depends(get_current_user)
+
 
 class ProductBase(BaseModel):
     name: str
@@ -39,14 +43,14 @@ class ProductResponse(ProductBase):
 
 
 @router.get("/", response_model=List[ProductResponse])
-async def get_products(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def get_products(skip: int = 0, limit: int = 100, db: Session = db_dependency):
     """Get all products"""
     products = db.query(Product).offset(skip).limit(limit).all()
     return products
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
-async def get_product(product_id: int, db: Session = Depends(get_db)):
+async def get_product(product_id: int, db: Session = db_dependency):
     """Get product by ID"""
     product = db.query(Product).filter(Product.id == product_id).first()
     if product is None:
@@ -57,8 +61,8 @@ async def get_product(product_id: int, db: Session = Depends(get_db)):
 @router.post("/", response_model=ProductResponse)
 async def create_product(
     product: ProductCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user = current_user_dependency,
 ):
     """Create new product (authenticated users only)"""
     db_product = Product(**product.dict())
@@ -72,8 +76,8 @@ async def create_product(
 async def update_product(
     product_id: int,
     product_update: ProductUpdate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user = current_user_dependency,
 ):
     """Update product (authenticated users only)"""
     product = db.query(Product).filter(Product.id == product_id).first()
@@ -92,8 +96,8 @@ async def update_product(
 @router.delete("/{product_id}")
 async def delete_product(
     product_id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    db: Session = db_dependency,
+    current_user = current_user_dependency,
 ):
     """Delete product (authenticated users only)"""
     product = db.query(Product).filter(Product.id == product_id).first()
