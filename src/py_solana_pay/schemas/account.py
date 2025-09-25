@@ -1,6 +1,7 @@
 """Account-related Pydantic schemas"""
 
 from typing import Optional
+
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -17,14 +18,16 @@ class UserResponse(BaseModel):
     email: str
     fullname: str
     wallet_key: Optional[str] = None
-    
+
     class Config:
         from_attributes = True
 
 
 class AccountUpdate(BaseModel):
     email: Optional[EmailStr] = Field(None, description="Email address")
-    fullname: Optional[str] = Field(None, min_length=1, max_length=100, description="Full name")
+    fullname: Optional[str] = Field(
+        None, min_length=1, max_length=100, description="Full name"
+    )
     wallet_key: Optional[str] = Field(None, description="Solana wallet public key")
 
 
@@ -33,6 +36,6 @@ class AccountResponse(BaseModel):
     email: str
     fullname: str
     wallet_key: Optional[str] = None
-    
+
     class Config:
         from_attributes = True

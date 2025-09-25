@@ -1,6 +1,7 @@
 """Payment-related Pydantic schemas"""
 
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -26,7 +27,7 @@ class CheckoutItem(BaseModel):
 class CheckoutSessionRequest(BaseModel):
     items: List[CheckoutItem] = Field(..., description="Items to purchase")
     success_url: str = Field(..., description="URL to redirect on successful payment")
-    cancel_url: str = Field(..., description="URL to redirect on cancelled payment") 
+    cancel_url: str = Field(..., description="URL to redirect on cancelled payment")
     metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
 
 
@@ -38,8 +39,12 @@ class CheckoutSessionResponse(BaseModel):
 
 class PaymentVerificationRequest(BaseModel):
     signature: str = Field(..., description="Solana transaction signature")
-    expected_amount: Optional[float] = Field(None, description="Expected payment amount")
-    expected_recipient: Optional[str] = Field(None, description="Expected recipient address")
+    expected_amount: Optional[float] = Field(
+        None, description="Expected payment amount"
+    )
+    expected_recipient: Optional[str] = Field(
+        None, description="Expected recipient address"
+    )
 
 
 class PaymentVerificationResponse(BaseModel):

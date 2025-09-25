@@ -1,17 +1,17 @@
 """Database models for py-solana-pay"""
 
 from .account import Account
-from .product import Product
-from .transaction import Transaction
+from .authorities import Authorities
 from .bank_account import BankAccount
-from .authorities import Authorities  
-from .role import Role
 from .comment import Comment
+from .product import Product
 from .reply import Reply
+from .role import Role
+from .transaction import Transaction
 
 __all__ = [
     "Account",
-    "Product", 
+    "Product",
     "Transaction",
     "BankAccount",
     "Authorities",

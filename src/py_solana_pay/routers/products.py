@@ -1,9 +1,10 @@
 """Product management router"""
 
 from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models.product import Product
@@ -32,7 +33,7 @@ class ProductUpdate(BaseModel):
 
 class ProductResponse(ProductBase):
     id: int
-    
+
     class Config:
         from_attributes = True
 
@@ -55,9 +56,9 @@ async def get_product(product_id: int, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=ProductResponse)
 async def create_product(
-    product: ProductCreate, 
+    product: ProductCreate,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ):
     """Create new product (authenticated users only)"""
     db_product = Product(**product.dict())
@@ -72,17 +73,17 @@ async def update_product(
     product_id: int,
     product_update: ProductUpdate,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ):
     """Update product (authenticated users only)"""
     product = db.query(Product).filter(Product.id == product_id).first()
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
-    
+
     update_data = product_update.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(product, field, value)
-    
+
     db.commit()
     db.refresh(product)
     return product
@@ -92,13 +93,13 @@ async def update_product(
 async def delete_product(
     product_id: int,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ):
     """Delete product (authenticated users only)"""
     product = db.query(Product).filter(Product.id == product_id).first()
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
-    
+
     db.delete(product)
     db.commit()
     return {"message": "Product deleted successfully"}

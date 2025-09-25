@@ -1,9 +1,10 @@
 """Account management router"""
 
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models.account import Account
@@ -17,7 +18,7 @@ class AccountResponse(BaseModel):
     email: str
     fullname: str
     wallet_key: str = None
-    
+
     class Config:
         from_attributes = True
 
@@ -46,27 +47,29 @@ async def get_account(username: str, db: Session = Depends(get_db)):
 
 @router.put("/{username}", response_model=AccountResponse)
 async def update_account(
-    username: str, 
-    account_update: AccountUpdate, 
+    username: str,
+    account_update: AccountUpdate,
     db: Session = Depends(get_db),
-    current_user: Account = Depends(get_current_user)
+    current_user: Account = Depends(get_current_user),
 ):
     """Update account information"""
     # Users can only update their own account
     if current_user.username != username:
-        raise HTTPException(status_code=403, detail="Not authorized to update this account")
-    
+        raise HTTPException(
+            status_code=403, detail="Not authorized to update this account"
+        )
+
     account = db.query(Account).filter(Account.username == username).first()
     if account is None:
         raise HTTPException(status_code=404, detail="Account not found")
-    
+
     if account_update.email is not None:
         account.email = account_update.email
     if account_update.fullname is not None:
         account.fullname = account_update.fullname
     if account_update.wallet_key is not None:
         account.wallet_key = account_update.wallet_key
-    
+
     db.commit()
     db.refresh(account)
     return account

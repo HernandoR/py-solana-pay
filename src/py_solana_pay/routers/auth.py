@@ -46,7 +46,7 @@ class UserResponse(BaseModel):
     email: str
     fullname: str
     wallet_key: Optional[str] = None
-    
+
     class Config:
         from_attributes = True
 
@@ -83,7 +83,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -104,7 +106,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 
 
 @router.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -125,12 +129,12 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = get_user(db, user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
-    
+
     # Check if email already exists
     existing_email = db.query(Account).filter(Account.email == user.email).first()
     if existing_email:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
+
     # Create new user
     hashed_password = get_password_hash(user.password)
     db_user = Account(
@@ -138,12 +142,12 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
         email=user.email,
         fullname=user.fullname,
         password=hashed_password,
-        wallet_key=user.wallet_key
+        wallet_key=user.wallet_key,
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    
+
     return db_user
 
 

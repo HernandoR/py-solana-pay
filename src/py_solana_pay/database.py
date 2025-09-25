@@ -1,9 +1,9 @@
 """Database configuration and session management"""
 
+from pydantic_settings import BaseSettings
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     candypay_private_api_key: str = ""
     candypay_public_api_key: str = ""
     candypay_endpoint: str = "https://api.candypay.fun"
-    
+
     class Config:
         env_file = ".env"
 
@@ -20,8 +20,10 @@ class Settings(BaseSettings):
 settings = Settings()
 
 engine = create_engine(
-    settings.database_url, 
-    connect_args={"check_same_thread": False} if "sqlite" in settings.database_url else {}
+    settings.database_url,
+    connect_args={"check_same_thread": False}
+    if "sqlite" in settings.database_url
+    else {},
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
