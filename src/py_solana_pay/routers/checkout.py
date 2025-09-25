@@ -67,11 +67,11 @@ async def create_checkout_session(
             }
 
     except httpx.HTTPError as e:
-        raise HTTPException(status_code=500, detail=f"Payment provider error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Payment provider error: {str(e)}") from e
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Checkout session creation failed: {str(e)}"
-        )
+        ) from e
 
 
 @router.post("/payment-url", response_model=PaymentUrlResponse)
@@ -107,11 +107,11 @@ async def create_payment_url(
         return PaymentUrlResponse(payment_url=payment_url, qr_code_url=qr_code_data)
 
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Payment URL generation failed: {str(e)}"
-        )
+        ) from e
 
 
 @router.post("/verify-payment", response_model=PaymentVerificationResponse)
@@ -177,4 +177,4 @@ async def get_wallet_balance(
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Balance retrieval failed: {str(e)}"
-        )
+        ) from e

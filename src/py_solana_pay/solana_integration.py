@@ -34,8 +34,8 @@ class SolanaPayUtil:
         # Validate recipient address
         try:
             Pubkey.from_string(recipient)
-        except Exception:
-            raise ValueError("Invalid recipient address")
+        except Exception as e:
+            raise ValueError("Invalid recipient address") from e
 
         # Build URL parameters
         params = {}
