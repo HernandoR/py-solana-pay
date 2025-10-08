@@ -15,11 +15,16 @@ def main():
     else:
         # Run server
         import uvicorn
+        from .logging_config import get_logger, log_app_event
+        
+        logger = get_logger(__name__)
 
-        print("🔥 py-solana-pay Server")
-        print("💰 Python implementation of Solana-Pay")
-        print("🚀 Starting at http://localhost:8000")
-        print("📖 API docs at http://localhost:8000/docs")
+        logger.info("🔥 py-solana-pay Server")
+        logger.info("💰 Python implementation of Solana-Pay")
+        logger.info("🚀 Starting at http://localhost:8000")
+        logger.info("📖 API docs at http://localhost:8000/docs")
+        
+        log_app_event("Module main entry point called")
 
         uvicorn.run("py_solana_pay.main:app", host="0.0.0.0", port=8000, reload=True)
 
