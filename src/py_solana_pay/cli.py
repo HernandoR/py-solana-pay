@@ -30,7 +30,9 @@ def generate_payment_url(args):
 
         # For CLI output, we still need to print to stdout
         print(f"Payment URL: {url}")
-        logger.info(f"Generated payment URL for recipient {args.recipient} amount {args.amount}")
+        logger.info(
+            f"Generated payment URL for recipient {args.recipient} amount {args.amount}"
+        )
 
         if args.qr:
             qr_data = solana_pay.generate_qr_code(url)
@@ -56,16 +58,18 @@ def verify_payment(args):
             print("✅ Payment verified successfully!")
             print(f"Signature: {args.signature}")
             logger.info(f"Payment verified successfully for signature {args.signature}")
-            
+
             if "block_time" in result:
                 print(f"Block time: {result['block_time']}")
             if "fee" in result:
                 print(f"Fee: {result['fee']} lamports")
         else:
-            error_msg = result.get('error', 'Unknown error')
+            error_msg = result.get("error", "Unknown error")
             print("❌ Payment verification failed!")
             print(f"Error: {error_msg}")
-            logger.error(f"Payment verification failed for signature {args.signature}: {error_msg}")
+            logger.error(
+                f"Payment verification failed for signature {args.signature}: {error_msg}"
+            )
 
     except Exception as e:
         logger.error(f"Error verifying payment: {e}")

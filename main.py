@@ -15,7 +15,7 @@ def main():
     logger.info("💰 A blockchain payment system built on the Solana platform")
     logger.info("🚀 Server starting at http://localhost:8000")
     logger.info("📖 API docs available at http://localhost:8000/docs")
-    
+
     log_app_event("Server startup initiated")
 
     uvicorn.run(

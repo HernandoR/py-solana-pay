@@ -28,13 +28,14 @@ BASE_URL = "http://localhost:8000"
 # Pydantic models for request validation
 class UserRegistration(BaseModel):
     """Model for user registration request"""
+
     username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
     fullname: str = Field(..., min_length=1, max_length=100)
     password: str = Field(..., min_length=8)
     wallet_key: Optional[str] = Field(None, min_length=32, max_length=44)
 
-    @field_validator('wallet_key')
+    @field_validator("wallet_key")
     @classmethod
     def validate_wallet_key(cls, v: Optional[str]) -> Optional[str]:
         """Validate Solana wallet address format (base58)"""
@@ -42,19 +43,22 @@ class UserRegistration(BaseModel):
             return v
         # Basic validation for Solana address (base58, 32-44 characters)
         import re
-        if not re.match(r'^[1-9A-HJ-NP-Za-km-z]{32,44}$', v):
-            raise ValueError('Invalid Solana wallet address format')
+
+        if not re.match(r"^[1-9A-HJ-NP-Za-km-z]{32,44}$", v):
+            raise ValueError("Invalid Solana wallet address format")
         return v
 
 
 class LoginCredentials(BaseModel):
     """Model for login credentials"""
+
     username: str = Field(..., min_length=3)
     password: str = Field(..., min_length=8)
 
 
 class ProductCreate(BaseModel):
     """Model for product creation request"""
+
     name: str = Field(..., min_length=1, max_length=200)
     price: float = Field(..., gt=0)
     quantity: int = Field(default=1, ge=1)
@@ -63,24 +67,26 @@ class ProductCreate(BaseModel):
 
 class PaymentURLRequest(BaseModel):
     """Model for payment URL generation request"""
+
     recipient: str = Field(..., min_length=32, max_length=44)
     amount: float = Field(..., gt=0)
     label: Optional[str] = Field(None, max_length=100)
     message: Optional[str] = Field(None, max_length=500)
 
-    @field_validator('recipient')
+    @field_validator("recipient")
     @classmethod
     def validate_recipient(cls, v: str) -> str:
         """Validate recipient is a valid Solana address"""
         import re
-        if not re.match(r'^[1-9A-HJ-NP-Za-km-z]{32,44}$', v):
-            raise ValueError('Invalid Solana wallet address format')
+
+        if not re.match(r"^[1-9A-HJ-NP-Za-km-z]{32,44}$", v):
+            raise ValueError("Invalid Solana wallet address format")
         return v
 
 
 class SolanaPayClient:
     """Client for interacting with py-solana-pay API using httpx"""
-    
+
     def __init__(self, base_url: str = BASE_URL):
         self.base_url = base_url
         self.token: Optional[str] = None
@@ -116,7 +122,7 @@ class SolanaPayClient:
 
         response = self.client.post(
             f"{self.base_url}/api/auth/register",
-            json=registration.model_dump(exclude_none=True)
+            json=registration.model_dump(exclude_none=True),
         )
         response.raise_for_status()
         return response.json()
@@ -152,31 +158,27 @@ class SolanaPayClient:
     ) -> Dict[str, Any]:
         """Create a new product with validated parameters"""
         # Validate product data using Pydantic
-        product = ProductCreate(
-            name=name,
-            price=price,
-            quantity=quantity,
-            image=image
-        )
+        product = ProductCreate(name=name, price=price, quantity=quantity, image=image)
 
         response = self.client.post(
             f"{self.base_url}/api/products/",
             json=product.model_dump(exclude_none=True),
-            headers=self._headers()
+            headers=self._headers(),
         )
         response.raise_for_status()
         return response.json()
 
     def generate_payment_url(
-        self, recipient: str, amount: float, label: Optional[str] = None, message: Optional[str] = None
+        self,
+        recipient: str,
+        amount: float,
+        label: Optional[str] = None,
+        message: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Generate a Solana payment URL with validated parameters"""
         # Validate payment request using Pydantic
         payment_request = PaymentURLRequest(
-            recipient=recipient,
-            amount=amount,
-            label=label,
-            message=message
+            recipient=recipient, amount=amount, label=label, message=message
         )
 
         response = self.client.post(
@@ -190,8 +192,7 @@ class SolanaPayClient:
     def get_transactions(self) -> List[Dict[str, Any]]:
         """Get user's transactions"""
         response = self.client.get(
-            f"{self.base_url}/api/transactions/",
-            headers=self._headers()
+            f"{self.base_url}/api/transactions/", headers=self._headers()
         )
         response.raise_for_status()
         return response.json()
@@ -290,8 +291,12 @@ def main():
             logger.info(f"Retrieved {len(transactions)} transactions")
 
             for tx in transactions[-3:]:  # Show last 3 transactions
-                print(f"   - {tx['transaction_type']}: {tx['transaction_details'][:50]}...")
-                logger.debug(f"Transaction: {tx['transaction_type']} - {tx['transaction_details'][:50]}...")
+                print(
+                    f"   - {tx['transaction_type']}: {tx['transaction_details'][:50]}..."
+                )
+                logger.debug(
+                    f"Transaction: {tx['transaction_type']} - {tx['transaction_details'][:50]}..."
+                )
         except httpx.HTTPStatusError as e:
             logger.error(f"Failed to fetch transactions: {e}")
             raise
