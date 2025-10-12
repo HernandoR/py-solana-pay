@@ -1,13 +1,10 @@
 """FastUI frontend router - Complete implementation"""
 
-from datetime import datetime
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from fastapi.security import OAuth2PasswordRequestForm
-from fastui import AnyComponent, FastUI
+from fastapi import APIRouter, Depends
+from fastui import AnyComponent
 from fastui import components as c
-from fastui.components.display import DisplayLookup, DisplayMode
 from fastui.events import AuthEvent, GoToEvent, PageEvent
 from fastui.forms import fastui_form
 from pydantic import BaseModel, Field
@@ -16,11 +13,9 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models.account import Account
 from ..models.product import Product
-from ..models.transaction import Transaction
 from ..routers.auth import (
     authenticate_user,
     create_access_token,
-    get_current_user,
     get_password_hash,
     get_user,
 )
@@ -32,7 +27,9 @@ router = APIRouter()
 class LoginForm(BaseModel):
     username: str = Field(title="Username", description="Your username")
     password: str = Field(
-        title="Password", description="Your password", json_schema_extra={"type": "password"}
+        title="Password",
+        description="Your password",
+        json_schema_extra={"type": "password"},
     )
 
 
@@ -44,7 +41,9 @@ class RegisterForm(BaseModel):
         title="Password", min_length=6, json_schema_extra={"type": "password"}
     )
     wallet_key: str = Field(
-        default="", title="Solana Wallet Address (Optional)", description="Your Solana wallet public key"
+        default="",
+        title="Solana Wallet Address (Optional)",
+        description="Your Solana wallet public key",
     )
 
 
@@ -63,7 +62,7 @@ optional_user_dependency = Annotated[Optional[Account], Depends(lambda: None)]
 @router.get("/ui/api/{path:path}")
 async def fastui_api_endpoint(path: str, db: db_dependency) -> list[AnyComponent]:
     """Main FastUI API endpoint - routes to different pages"""
-    
+
     if path == "" or path == "index":
         return get_index_page()
     elif path == "login":
@@ -90,7 +89,10 @@ async def fastui_api_endpoint(path: str, db: db_dependency) -> list[AnyComponent
                 components=[
                     c.Heading(text="404 - Page Not Found", level=1),
                     c.Paragraph(text=f"The page '{path}' does not exist."),
-                    c.Link(components=[c.Text(text="Go Home")], on_click=GoToEvent(url="/ui/")),
+                    c.Link(
+                        components=[c.Text(text="Go Home")],
+                        on_click=GoToEvent(url="/ui/"),
+                    ),
                 ]
             )
         ]
@@ -99,7 +101,7 @@ async def fastui_api_endpoint(path: str, db: db_dependency) -> list[AnyComponent
 def get_navbar(authenticated: bool = False) -> AnyComponent:
     """Common navigation bar for all pages"""
     end_links = []
-    
+
     if authenticated:
         end_links = [
             c.Link(
@@ -130,7 +132,7 @@ def get_navbar(authenticated: bool = False) -> AnyComponent:
                 active="startswith:/ui/register",
             ),
         ]
-    
+
     return c.Navbar(
         title="Solana Pay",
         title_event=GoToEvent(url="/ui/"),
@@ -162,9 +164,7 @@ def get_index_page() -> list[AnyComponent]:
             components=[
                 get_navbar(),
                 c.Heading(text="Welcome to Solana Pay", level=1),
-                c.Paragraph(
-                    text="The future of payments powered by Solana blockchain"
-                ),
+                c.Paragraph(text="The future of payments powered by Solana blockchain"),
                 c.Div(
                     components=[
                         c.Heading(text="Why Choose Solana Pay?", level=2),
@@ -286,7 +286,7 @@ def get_products_page(db: Session) -> list[AnyComponent]:
     """Products listing page"""
     # Fetch products from database
     products = db.query(Product).limit(50).all()
-    
+
     if not products:
         product_components = [
             c.Paragraph(text="No products available at the moment."),
@@ -310,13 +310,15 @@ def get_products_page(db: Session) -> list[AnyComponent]:
                     class_name="card p-3 mb-3",
                 )
             )
-    
+
     return [
         c.Page(
             components=[
                 get_navbar(),
                 c.Heading(text="Products", level=1),
-                c.Paragraph(text="Browse our collection of items available for purchase with Solana"),
+                c.Paragraph(
+                    text="Browse our collection of items available for purchase with Solana"
+                ),
                 c.Div(
                     components=[
                         c.Link(
@@ -335,7 +337,7 @@ def get_products_page(db: Session) -> list[AnyComponent]:
 def get_product_detail_page(db: Session, product_id: int) -> list[AnyComponent]:
     """Product detail page"""
     product = db.query(Product).filter(Product.id == product_id).first()
-    
+
     if not product:
         return [
             c.Page(
@@ -350,7 +352,7 @@ def get_product_detail_page(db: Session, product_id: int) -> list[AnyComponent]:
                 ]
             )
         ]
-    
+
     return [
         c.Page(
             components=[
@@ -369,7 +371,9 @@ def get_product_detail_page(db: Session, product_id: int) -> list[AnyComponent]:
                     components=[
                         c.Button(
                             text="Add to Cart",
-                            on_click=PageEvent(name="add-to-cart", data={"product_id": product.id}),
+                            on_click=PageEvent(
+                                name="add-to-cart", data={"product_id": product.id}
+                            ),
                             class_name="btn btn-primary me-2",
                         ),
                         c.Link(
@@ -391,7 +395,9 @@ def get_account_page() -> list[AnyComponent]:
             components=[
                 get_navbar(authenticated=True),
                 c.Heading(text="My Account", level=1),
-                c.Paragraph(text="Manage your account settings and view your information."),
+                c.Paragraph(
+                    text="Manage your account settings and view your information."
+                ),
                 c.Div(
                     components=[
                         c.Heading(text="Account Information", level=3),
@@ -482,27 +488,28 @@ def get_about_page() -> list[AnyComponent]:
 
 @router.post("/ui/api/login/submit")
 async def login_submit(
-    form: Annotated[LoginForm, fastui_form(LoginForm)], 
-    db: db_dependency
+    form: Annotated[LoginForm, fastui_form(LoginForm)], db: db_dependency
 ) -> list[AnyComponent]:
     """Handle login form submission"""
     # Authenticate user
     user = authenticate_user(db, form.username, form.password)
-    
+
     if not user:
         # Return error message
         return [
-            c.Paragraph(text="Incorrect username or password", class_name="text-danger"),
+            c.Paragraph(
+                text="Incorrect username or password", class_name="text-danger"
+            ),
             c.FireEvent(event=GoToEvent(url="/ui/login")),
         ]
-    
+
     # Generate access token
     from datetime import timedelta
+
     access_token = create_access_token(
-        data={"sub": user.username}, 
-        expires_delta=timedelta(minutes=30)
+        data={"sub": user.username}, expires_delta=timedelta(minutes=30)
     )
-    
+
     # Return success and redirect with auth event
     return [
         c.FireEvent(event=AuthEvent(token=access_token, url="/ui/account")),
@@ -511,8 +518,7 @@ async def login_submit(
 
 @router.post("/ui/api/register/submit")
 async def register_submit(
-    form: Annotated[RegisterForm, fastui_form(RegisterForm)], 
-    db: db_dependency
+    form: Annotated[RegisterForm, fastui_form(RegisterForm)], db: db_dependency
 ) -> list[AnyComponent]:
     """Handle registration form submission"""
     # Check if user already exists
@@ -522,7 +528,7 @@ async def register_submit(
             c.Paragraph(text="Username already exists", class_name="text-danger"),
             c.FireEvent(event=GoToEvent(url="/ui/register")),
         ]
-    
+
     # Check if email already exists
     existing_email = db.query(Account).filter(Account.email == form.email).first()
     if existing_email:
@@ -530,7 +536,7 @@ async def register_submit(
             c.Paragraph(text="Email already registered", class_name="text-danger"),
             c.FireEvent(event=GoToEvent(url="/ui/register")),
         ]
-    
+
     # Create new user
     hashed_password = get_password_hash(form.password)
     new_user = Account(
@@ -542,7 +548,7 @@ async def register_submit(
     )
     db.add(new_user)
     db.commit()
-    
+
     # Redirect to login
     return [
         c.FireEvent(event=GoToEvent(url="/ui/login")),
@@ -551,8 +557,7 @@ async def register_submit(
 
 @router.post("/ui/api/product/create")
 async def create_product_submit(
-    form: Annotated[ProductForm, fastui_form(ProductForm)],
-    db: db_dependency
+    form: Annotated[ProductForm, fastui_form(ProductForm)], db: db_dependency
 ) -> list[AnyComponent]:
     """Handle product creation"""
     # Create new product
@@ -564,7 +569,7 @@ async def create_product_submit(
     )
     db.add(new_product)
     db.commit()
-    
+
     # Redirect to products page
     return [
         c.FireEvent(event=GoToEvent(url="/ui/products")),

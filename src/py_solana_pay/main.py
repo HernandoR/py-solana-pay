@@ -37,7 +37,9 @@ if (RESOURCES_DIR / "static").exists():
 else:
     # Fallback to original static directory if resources not available
     if (PROJECT_ROOT / "static").exists():
-        app.mount("/static", StaticFiles(directory=PROJECT_ROOT / "static"), name="static")
+        app.mount(
+            "/static", StaticFiles(directory=PROJECT_ROOT / "static"), name="static"
+        )
         logger.info(f"Mounted static files from {PROJECT_ROOT / 'static'}")
 
 # Configure CORS
@@ -66,7 +68,7 @@ app.include_router(fastui_pages.router, tags=["frontend"])
 @app.get("/ui/{path:path}", response_class=HTMLResponse)
 async def fastui_html(path: str = "") -> HTMLResponse:
     """Serve FastUI frontend HTML"""
-    return HTMLResponse(prebuilt_html(title="Solana Pay"))
+    return HTMLResponse(prebuilt_html(title="Solana Pay", api_root_url="/ui/api/"))
 
 
 # Web routes (Frontend) - Redirects to FastUI
