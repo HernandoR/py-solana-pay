@@ -59,43 +59,59 @@ db_dependency = Annotated[Session, Depends(get_db)]
 optional_user_dependency = Annotated[Optional[Account], Depends(lambda: None)]
 
 
-@router.get("/api/ui/{path:path}")
-async def fastui_api_endpoint(path: str, db: db_dependency) -> list[AnyComponent]:
-    """Main FastUI API endpoint - routes to different pages"""
+@router.get("/api/")
+@router.get("/api/index")
+async def fastui_api_index(db: db_dependency) -> list[AnyComponent]:
+    """Homepage component"""
+    return get_index_page()
 
-    if path == "" or path == "index":
-        return get_index_page()
-    elif path == "login":
-        return get_login_page()
-    elif path == "register":
-        return get_register_page()
-    elif path == "products":
-        return get_products_page(db)
-    elif path.startswith("product/"):
-        product_id = path.split("/")[1]
-        return get_product_detail_page(db, int(product_id))
-    elif path == "about":
-        return get_about_page()
-    elif path == "account":
-        return get_account_page()
-    elif path == "transactions":
-        return get_transactions_page()
-    elif path == "create-product":
-        return get_create_product_page()
-    else:
-        # 404 page
-        return [
-            c.Page(
-                components=[
-                    c.Heading(text="404 - Page Not Found", level=1),
-                    c.Paragraph(text=f"The page '{path}' does not exist."),
-                    c.Link(
-                        components=[c.Text(text="Go Home")],
-                        on_click=GoToEvent(url="/ui/"),
-                    ),
-                ]
-            )
-        ]
+
+@router.get("/api/login")
+async def fastui_api_login() -> list[AnyComponent]:
+    """Login page component"""
+    return get_login_page()
+
+
+@router.get("/api/register")
+async def fastui_api_register() -> list[AnyComponent]:
+    """Register page component"""
+    return get_register_page()
+
+
+@router.get("/api/products")
+async def fastui_api_products(db: db_dependency) -> list[AnyComponent]:
+    """Products page component"""
+    return get_products_page(db)
+
+
+@router.get("/api/product/{product_id}")
+async def fastui_api_product_detail(product_id: int, db: db_dependency) -> list[AnyComponent]:
+    """Product detail page component"""
+    return get_product_detail_page(db, product_id)
+
+
+@router.get("/api/about")
+async def fastui_api_about() -> list[AnyComponent]:
+    """About page component"""
+    return get_about_page()
+
+
+@router.get("/api/account")
+async def fastui_api_account() -> list[AnyComponent]:
+    """Account page component"""
+    return get_account_page()
+
+
+@router.get("/api/transactions")
+async def fastui_api_transactions() -> list[AnyComponent]:
+    """Transactions page component"""
+    return get_transactions_page()
+
+
+@router.get("/api/create-product")
+async def fastui_api_create_product() -> list[AnyComponent]:
+    """Create product page component"""
+    return get_create_product_page()
 
 
 def get_navbar(authenticated: bool = False) -> AnyComponent:
@@ -106,13 +122,13 @@ def get_navbar(authenticated: bool = False) -> AnyComponent:
         end_links = [
             c.Link(
                 components=[c.Text(text="Account")],
-                on_click=GoToEvent(url="/ui/account"),
-                active="startswith:/ui/account",
+                on_click=GoToEvent(url="/account"),
+                active="startswith:/account",
             ),
             c.Link(
                 components=[c.Text(text="Transactions")],
-                on_click=GoToEvent(url="/ui/transactions"),
-                active="startswith:/ui/transactions",
+                on_click=GoToEvent(url="/transactions"),
+                active="startswith:/transactions",
             ),
             c.Link(
                 components=[c.Text(text="Logout")],
@@ -123,34 +139,34 @@ def get_navbar(authenticated: bool = False) -> AnyComponent:
         end_links = [
             c.Link(
                 components=[c.Text(text="Login")],
-                on_click=GoToEvent(url="/ui/login"),
-                active="startswith:/ui/login",
+                on_click=GoToEvent(url="/login"),
+                active="startswith:/login",
             ),
             c.Link(
                 components=[c.Text(text="Register")],
-                on_click=GoToEvent(url="/ui/register"),
-                active="startswith:/ui/register",
+                on_click=GoToEvent(url="/register"),
+                active="startswith:/register",
             ),
         ]
 
     return c.Navbar(
         title="Solana Pay",
-        title_event=GoToEvent(url="/ui/"),
+        title_event=GoToEvent(url="/"),
         start_links=[
             c.Link(
                 components=[c.Text(text="Home")],
-                on_click=GoToEvent(url="/ui/"),
-                active="startswith:/ui/index",
+                on_click=GoToEvent(url="/"),
+                active="startswith:/index",
             ),
             c.Link(
                 components=[c.Text(text="Products")],
-                on_click=GoToEvent(url="/ui/products"),
-                active="startswith:/ui/products",
+                on_click=GoToEvent(url="/products"),
+                active="startswith:/products",
             ),
             c.Link(
                 components=[c.Text(text="About")],
-                on_click=GoToEvent(url="/ui/about"),
-                active="startswith:/ui/about",
+                on_click=GoToEvent(url="/about"),
+                active="startswith:/about",
             ),
         ],
         end_links=end_links,
@@ -210,12 +226,12 @@ def get_index_page() -> list[AnyComponent]:
                     components=[
                         c.Button(
                             text="Get Started",
-                            on_click=GoToEvent(url="/ui/register"),
+                            on_click=GoToEvent(url="/register"),
                             class_name="btn btn-primary me-2",
                         ),
                         c.Button(
                             text="Browse Products",
-                            on_click=GoToEvent(url="/ui/products"),
+                            on_click=GoToEvent(url="/products"),
                             class_name="btn btn-outline-primary",
                         ),
                     ],
@@ -236,7 +252,7 @@ def get_login_page() -> list[AnyComponent]:
                 c.Paragraph(text="Sign in to your Solana Pay account"),
                 c.ModelForm(
                     model=LoginForm,
-                    submit_url="/api/ui/login/submit",
+                    submit_url="/api/login/submit",
                     method="POST",
                 ),
                 c.Div(
@@ -244,7 +260,7 @@ def get_login_page() -> list[AnyComponent]:
                         c.Text(text="Don't have an account? "),
                         c.Link(
                             components=[c.Text(text="Register here")],
-                            on_click=GoToEvent(url="/ui/register"),
+                            on_click=GoToEvent(url="/register"),
                         ),
                     ],
                     class_name="mt-3",
@@ -264,7 +280,7 @@ def get_register_page() -> list[AnyComponent]:
                 c.Paragraph(text="Create your Solana Pay account"),
                 c.ModelForm(
                     model=RegisterForm,
-                    submit_url="/api/ui/register/submit",
+                    submit_url="/api/register/submit",
                     method="POST",
                 ),
                 c.Div(
@@ -272,7 +288,7 @@ def get_register_page() -> list[AnyComponent]:
                         c.Text(text="Already have an account? "),
                         c.Link(
                             components=[c.Text(text="Login here")],
-                            on_click=GoToEvent(url="/ui/login"),
+                            on_click=GoToEvent(url="/login"),
                         ),
                     ],
                     class_name="mt-3",
@@ -303,7 +319,7 @@ def get_products_page(db: Session) -> list[AnyComponent]:
                         c.Paragraph(text=f"Available: {product.quantity}"),
                         c.Button(
                             text="View Details",
-                            on_click=GoToEvent(url=f"/ui/product/{product.id}"),
+                            on_click=GoToEvent(url=f"/product/{product.id}"),
                             class_name="btn btn-sm btn-primary",
                         ),
                     ],
@@ -323,7 +339,7 @@ def get_products_page(db: Session) -> list[AnyComponent]:
                     components=[
                         c.Link(
                             components=[c.Text(text="+ Create New Product")],
-                            on_click=GoToEvent(url="/ui/create-product"),
+                            on_click=GoToEvent(url="/create-product"),
                             class_name="btn btn-success mb-3",
                         ),
                     ]
@@ -347,7 +363,7 @@ def get_product_detail_page(db: Session, product_id: int) -> list[AnyComponent]:
                     c.Paragraph(text=f"Product with ID {product_id} does not exist."),
                     c.Link(
                         components=[c.Text(text="Back to Products")],
-                        on_click=GoToEvent(url="/ui/products"),
+                        on_click=GoToEvent(url="/products"),
                     ),
                 ]
             )
@@ -378,7 +394,7 @@ def get_product_detail_page(db: Session, product_id: int) -> list[AnyComponent]:
                         ),
                         c.Link(
                             components=[c.Text(text="Back to Products")],
-                            on_click=GoToEvent(url="/ui/products"),
+                            on_click=GoToEvent(url="/products"),
                             class_name="btn btn-secondary",
                         ),
                     ]
@@ -409,7 +425,7 @@ def get_account_page() -> list[AnyComponent]:
                 ),
                 c.Link(
                     components=[c.Text(text="View Transactions")],
-                    on_click=GoToEvent(url="/ui/transactions"),
+                    on_click=GoToEvent(url="/transactions"),
                     class_name="btn btn-primary",
                 ),
             ]
@@ -446,12 +462,12 @@ def get_create_product_page() -> list[AnyComponent]:
                 c.Paragraph(text="Add a new product to the catalog"),
                 c.ModelForm(
                     model=ProductForm,
-                    submit_url="/api/ui/product/create",
+                    submit_url="/api/product/create",
                     method="POST",
                 ),
                 c.Link(
                     components=[c.Text(text="Cancel")],
-                    on_click=GoToEvent(url="/ui/products"),
+                    on_click=GoToEvent(url="/products"),
                     class_name="btn btn-secondary mt-3",
                 ),
             ]
@@ -486,7 +502,7 @@ def get_about_page() -> list[AnyComponent]:
     ]
 
 
-@router.post("/api/ui/login/submit")
+@router.post("/api/login/submit")
 async def login_submit(
     form: Annotated[LoginForm, fastui_form(LoginForm)], db: db_dependency
 ) -> list[AnyComponent]:
@@ -500,7 +516,7 @@ async def login_submit(
             c.Paragraph(
                 text="Incorrect username or password", class_name="text-danger"
             ),
-            c.FireEvent(event=GoToEvent(url="/ui/login")),
+            c.FireEvent(event=GoToEvent(url="/login")),
         ]
 
     # Generate access token
@@ -512,11 +528,11 @@ async def login_submit(
 
     # Return success and redirect with auth event
     return [
-        c.FireEvent(event=AuthEvent(token=access_token, url="/ui/account")),
+        c.FireEvent(event=AuthEvent(token=access_token, url="/account")),
     ]
 
 
-@router.post("/api/ui/register/submit")
+@router.post("/api/register/submit")
 async def register_submit(
     form: Annotated[RegisterForm, fastui_form(RegisterForm)], db: db_dependency
 ) -> list[AnyComponent]:
@@ -526,7 +542,7 @@ async def register_submit(
     if existing_user:
         return [
             c.Paragraph(text="Username already exists", class_name="text-danger"),
-            c.FireEvent(event=GoToEvent(url="/ui/register")),
+            c.FireEvent(event=GoToEvent(url="/register")),
         ]
 
     # Check if email already exists
@@ -534,7 +550,7 @@ async def register_submit(
     if existing_email:
         return [
             c.Paragraph(text="Email already registered", class_name="text-danger"),
-            c.FireEvent(event=GoToEvent(url="/ui/register")),
+            c.FireEvent(event=GoToEvent(url="/register")),
         ]
 
     # Create new user
@@ -551,11 +567,11 @@ async def register_submit(
 
     # Redirect to login
     return [
-        c.FireEvent(event=GoToEvent(url="/ui/login")),
+        c.FireEvent(event=GoToEvent(url="/login")),
     ]
 
 
-@router.post("/api/ui/product/create")
+@router.post("/api/product/create")
 async def create_product_submit(
     form: Annotated[ProductForm, fastui_form(ProductForm)], db: db_dependency
 ) -> list[AnyComponent]:
@@ -572,5 +588,5 @@ async def create_product_submit(
 
     # Redirect to products page
     return [
-        c.FireEvent(event=GoToEvent(url="/ui/products")),
+        c.FireEvent(event=GoToEvent(url="/products")),
     ]
