@@ -254,12 +254,31 @@ curl http://localhost:8000/ui/
 
 ## Migration Path
 
-For projects currently using the traditional templates:
+The migration to FastUI is now complete. All traditional template routes have been converted to redirects:
 
-1. **Keep Traditional Routes**: The old routes (`/`, `/login`, etc.) still work
-2. **Add FastUI Routes**: New routes at `/ui/*` path
-3. **Gradual Migration**: Migrate one page at a time
-4. **Deprecate Old Routes**: Once FastUI is stable, redirect old routes to new ones
+**Route Redirects (HTTP 302):**
+- `/` → `/ui/` (Homepage)
+- `/login` → `/ui/login` (Login page)
+- `/register` → `/ui/register` (Registration)
+- `/account` → `/ui/account` (User account)
+- `/about` → `/ui/about` (About page)
+- `/product` → `/ui/products` (Product listing)
+- `/cart` → `/ui/` (Shopping cart - to be implemented)
+- `/shop-single` → `/ui/products` (Product details)
+- `/success` → `/ui/` (Payment success - to be implemented)
+- `/cancel` → `/ui/` (Payment cancel - to be implemented)
+
+**What Changed:**
+1. ~~Keep Traditional Routes~~ → **Converted to redirects**
+2. ~~Add FastUI Routes~~ → **Complete**
+3. ~~Gradual Migration~~ → **Fully migrated**
+4. ~~Deprecate Old Routes~~ → **All routes now redirect to FastUI**
+
+**Technical Changes:**
+- Removed Jinja2Templates dependency from main.py
+- Removed template rendering logic
+- All routes return RedirectResponse to FastUI equivalents
+- Static files still mounted for any remaining assets
 
 ## Known Limitations
 

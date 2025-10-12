@@ -2,11 +2,10 @@
 
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from fastui import prebuilt_html
 
 from .database import Base, engine
@@ -30,7 +29,7 @@ app = FastAPI(
 # Get project root directory
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
-# Mount static files from resources directory (contains frontend assets from VietBx23/Solona-Pay)
+# Mount static files from resources directory (for any remaining static assets)
 RESOURCES_DIR = PROJECT_ROOT / "resources"
 if (RESOURCES_DIR / "static").exists():
     app.mount("/static", StaticFiles(directory=RESOURCES_DIR / "static"), name="static")
@@ -40,11 +39,6 @@ else:
     if (PROJECT_ROOT / "static").exists():
         app.mount("/static", StaticFiles(directory=PROJECT_ROOT / "static"), name="static")
         logger.info(f"Mounted static files from {PROJECT_ROOT / 'static'}")
-
-# Setup templates from resources directory (Thymeleaf templates converted to Jinja2)
-TEMPLATES_DIR = RESOURCES_DIR / "templates" if (RESOURCES_DIR / "templates").exists() else PROJECT_ROOT / "templates"
-templates = Jinja2Templates(directory=TEMPLATES_DIR)
-logger.info(f"Using templates from {TEMPLATES_DIR}")
 
 # Configure CORS
 app.add_middleware(
@@ -75,77 +69,79 @@ async def fastui_html(path: str = "") -> HTMLResponse:
     return HTMLResponse(prebuilt_html(title="Solana Pay"))
 
 
-# Web routes (Frontend)
+# Web routes (Frontend) - Redirects to FastUI
+
+
 @app.get("/", response_class=HTMLResponse)
 @app.get("/index.html", response_class=HTMLResponse)
-async def index(request: Request):
-    """Homepage - using resources from VietBx23/Solona-Pay"""
-    logger.info("Homepage accessed")
-    return templates.TemplateResponse("index.html", {"request": request})
+async def index():
+    """Homepage - redirects to FastUI"""
+    logger.info("Homepage accessed - redirecting to FastUI")
+    return RedirectResponse(url="/ui/", status_code=302)
 
 
 @app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    """Login page"""
-    logger.info("Login page accessed")
-    return templates.TemplateResponse("login.html", {"request": request})
+async def login_page():
+    """Login page - redirects to FastUI"""
+    logger.info("Login page accessed - redirecting to FastUI")
+    return RedirectResponse(url="/ui/login", status_code=302)
 
 
 @app.get("/register", response_class=HTMLResponse)
 @app.get("/register.html", response_class=HTMLResponse)
-async def register_page(request: Request):
-    """Registration page"""
-    logger.info("Registration page accessed")
-    return templates.TemplateResponse("register.html", {"request": request})
+async def register_page():
+    """Registration page - redirects to FastUI"""
+    logger.info("Registration page accessed - redirecting to FastUI")
+    return RedirectResponse(url="/ui/register", status_code=302)
 
 
 @app.get("/account", response_class=HTMLResponse)
-async def account_page(request: Request):
-    """Account page"""
-    logger.info("Account page accessed")
-    return templates.TemplateResponse("account.html", {"request": request})
+async def account_page():
+    """Account page - redirects to FastUI"""
+    logger.info("Account page accessed - redirecting to FastUI")
+    return RedirectResponse(url="/ui/account", status_code=302)
 
 
 @app.get("/about", response_class=HTMLResponse)
-async def about_page(request: Request):
-    """About page"""
-    logger.info("About page accessed")
-    return templates.TemplateResponse("about.html", {"request": request})
+async def about_page():
+    """About page - redirects to FastUI"""
+    logger.info("About page accessed - redirecting to FastUI")
+    return RedirectResponse(url="/ui/about", status_code=302)
 
 
 @app.get("/product", response_class=HTMLResponse)
-async def product_page(request: Request):
-    """Product page"""
-    logger.info("Product page accessed")
-    return templates.TemplateResponse("product.html", {"request": request})
+async def product_page():
+    """Product page - redirects to FastUI"""
+    logger.info("Product page accessed - redirecting to FastUI")
+    return RedirectResponse(url="/ui/products", status_code=302)
 
 
 @app.get("/cart", response_class=HTMLResponse)
-async def cart_page(request: Request):
-    """Shopping cart page"""
-    logger.info("Cart page accessed")
-    return templates.TemplateResponse("cart.html", {"request": request})
+async def cart_page():
+    """Shopping cart page - redirects to FastUI"""
+    logger.info("Cart page accessed - redirecting to FastUI")
+    return RedirectResponse(url="/ui/", status_code=302)
 
 
 @app.get("/shop-single", response_class=HTMLResponse)
-async def shop_single_page(request: Request):
-    """Shop single product page"""
-    logger.info("Shop single page accessed")
-    return templates.TemplateResponse("shop-single.html", {"request": request})
+async def shop_single_page():
+    """Shop single product page - redirects to FastUI"""
+    logger.info("Shop single page accessed - redirecting to FastUI")
+    return RedirectResponse(url="/ui/products", status_code=302)
 
 
 @app.get("/success", response_class=HTMLResponse)
-async def success_page(request: Request):
-    """Payment success page"""
-    logger.info("Success page accessed")
-    return templates.TemplateResponse("success.html", {"request": request})
+async def success_page():
+    """Payment success page - redirects to FastUI"""
+    logger.info("Success page accessed - redirecting to FastUI")
+    return RedirectResponse(url="/ui/", status_code=302)
 
 
 @app.get("/cancel", response_class=HTMLResponse)
-async def cancel_page(request: Request):
-    """Payment cancel page"""
-    logger.info("Cancel page accessed")
-    return templates.TemplateResponse("cancel.html", {"request": request})
+async def cancel_page():
+    """Payment cancel page - redirects to FastUI"""
+    logger.info("Cancel page accessed - redirecting to FastUI")
+    return RedirectResponse(url="/ui/", status_code=302)
 
 
 @app.get("/api")

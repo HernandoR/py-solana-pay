@@ -255,4 +255,13 @@ The new FastUI frontend is located at `/ui/` and provides all the functionality 
 5. **Better Integration**: Direct API integration without manual fetch calls ✅
 
 ### Migration Status
-The FastUI implementation is complete and functional. The traditional template-based routes (`/`, `/login`, `/register`, etc.) are preserved for backward compatibility but should be considered deprecated in favor of the FastUI routes (`/ui/*`).
+The FastUI implementation is complete and the application has been fully switched to FastUI. All traditional template-based routes (`/`, `/login`, `/register`, etc.) now redirect to the new FastUI routes (`/ui/*`) with HTTP 302 redirects:
+
+- `/` → `/ui/`
+- `/login` → `/ui/login`
+- `/register` → `/ui/register`
+- `/account` → `/ui/account`
+- `/about` → `/ui/about`
+- `/product` → `/ui/products`
+
+Jinja2 template rendering has been completely removed - the application is now 100% FastUI-based.
