@@ -119,6 +119,16 @@ Key environment variables:
 
 This project is a learning implementation of Solana Pay in Python. Contributions are welcome!
 
+## Acknowledgments
+
+This project is a Python implementation inspired by and ported from the original [VietBx23/Solona-Pay](https://github.com/VietBx23/Solona-Pay) Java Spring Boot application.
+
+**Special thanks to:**
+- **[VietBx23](https://github.com/VietBx23)** - For creating the original Solona-Pay project and providing the frontend resources, design inspiration, and overall architecture that made this Python port possible.
+- The frontend templates, CSS, JavaScript, and static assets in the `resources/` directory are adapted from the original VietBx23/Solona-Pay repository.
+
+We are deeply grateful for their excellent work and for making their project available as a reference.
+
 ## License
 
 This project is inspired by and ported from [VietBx23/Solona-Pay](https://github.com/VietBx23/Solona-Pay).
