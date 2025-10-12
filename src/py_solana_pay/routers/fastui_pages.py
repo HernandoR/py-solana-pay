@@ -490,13 +490,10 @@ async def login_submit(
     user = authenticate_user(db, form.username, form.password)
     
     if not user:
-        # Return error toast
+        # Return error message
         return [
-            c.Toast(
-                title="Login Failed",
-                body="Incorrect username or password",
-                open_trigger=PageEvent(name="login-error"),
-            ),
+            c.Paragraph(text="Incorrect username or password", class_name="text-danger"),
+            c.FireEvent(event=GoToEvent(url="/ui/login")),
         ]
     
     # Generate access token
@@ -522,22 +519,16 @@ async def register_submit(
     existing_user = get_user(db, form.username)
     if existing_user:
         return [
-            c.Toast(
-                title="Registration Failed",
-                body="Username already exists",
-                open_trigger=PageEvent(name="register-error"),
-            ),
+            c.Paragraph(text="Username already exists", class_name="text-danger"),
+            c.FireEvent(event=GoToEvent(url="/ui/register")),
         ]
     
     # Check if email already exists
     existing_email = db.query(Account).filter(Account.email == form.email).first()
     if existing_email:
         return [
-            c.Toast(
-                title="Registration Failed",
-                body="Email already registered",
-                open_trigger=PageEvent(name="register-error"),
-            ),
+            c.Paragraph(text="Email already registered", class_name="text-danger"),
+            c.FireEvent(event=GoToEvent(url="/ui/register")),
         ]
     
     # Create new user
@@ -554,11 +545,6 @@ async def register_submit(
     
     # Redirect to login
     return [
-        c.Toast(
-            title="Success",
-            body="Account created successfully! Please login.",
-            open_trigger=PageEvent(name="register-success"),
-        ),
         c.FireEvent(event=GoToEvent(url="/ui/login")),
     ]
 
@@ -581,10 +567,5 @@ async def create_product_submit(
     
     # Redirect to products page
     return [
-        c.Toast(
-            title="Success",
-            body=f"Product '{form.name}' created successfully!",
-            open_trigger=PageEvent(name="product-created"),
-        ),
         c.FireEvent(event=GoToEvent(url="/ui/products")),
     ]
