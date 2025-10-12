@@ -507,6 +507,80 @@ API information endpoint
 - Alternative docs: `/redoc` (ReDoc)
 - Automatically generated from FastAPI routes and Pydantic models
 
+## FastUI Integration
+
+The backend now includes FastUI routes for serving a modern Python-based frontend:
+
+### FastUI Endpoints
+
+#### GET `/ui/{path:path}`
+**Purpose**: Serve FastUI frontend HTML
+- **Response**: HTML page that loads the React-based FastUI frontend
+- **Behavior**: Returns prebuilt HTML with CDN links to FastUI React components
+
+#### GET `/ui/api/{path:path}`
+**Purpose**: FastUI API endpoint for page components
+- **Path Parameter**: `path` (page route)
+- **Response**: JSON array of FastUI components
+- **Supported Paths**:
+  - `` or `index` - Homepage
+  - `login` - Login page
+  - `register` - Registration page  
+  - `products` - Product listing
+  - `product/{id}` - Product detail
+  - `about` - About page
+  - `account` - User account (authenticated)
+  - `transactions` - Transaction history (authenticated)
+  - `create-product` - Product creation form
+- **Behavior**: Returns component definitions that FastUI React frontend renders
+
+#### POST `/ui/api/login/submit`
+**Purpose**: Handle login form submission from FastUI
+- **Request Body**: LoginForm (username, password)
+- **Response**: FireEvent with AuthEvent containing JWT token
+- **Behavior**:
+  - Authenticates user credentials
+  - Generates JWT token
+  - Returns authentication event for FastUI to store token
+  - Redirects to account page on success
+
+#### POST `/ui/api/register/submit`
+**Purpose**: Handle registration form submission from FastUI
+- **Request Body**: RegisterForm (username, email, fullname, password, wallet_key)
+- **Response**: FireEvent with GoToEvent or Toast
+- **Behavior**:
+  - Validates username and email uniqueness
+  - Creates new account with hashed password
+  - Shows success toast
+  - Redirects to login page
+
+#### POST `/ui/api/product/create`
+**Purpose**: Handle product creation from FastUI
+- **Request Body**: ProductForm (name, price, quantity, image)
+- **Response**: FireEvent with GoToEvent and Toast
+- **Behavior**:
+  - Creates new product in database
+  - Shows success toast
+  - Redirects to products page
+
+### FastUI Architecture
+
+The FastUI integration uses:
+- **Component-based rendering**: Pages defined as lists of FastUI components
+- **Pydantic forms**: Form validation matches backend models
+- **Event-driven navigation**: GoToEvent, PageEvent, AuthEvent for interactions
+- **Shared models**: Reuses backend Pydantic models for form definitions
+- **Direct database access**: FastUI pages query database directly via SQLAlchemy
+
+### Authentication Flow with FastUI
+
+1. User submits login form on `/ui/login`
+2. Form data sent to `/ui/api/login/submit`
+3. Backend validates credentials
+4. Returns AuthEvent with JWT token
+5. FastUI stores token and redirects to `/ui/account`
+6. Subsequent requests include token in headers (handled by FastUI)
+
 ## Planned Improvements
 1. Role-based access control (admin/user roles)
 2. Enhanced password requirements
