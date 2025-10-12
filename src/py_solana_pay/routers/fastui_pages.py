@@ -59,7 +59,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 optional_user_dependency = Annotated[Optional[Account], Depends(lambda: None)]
 
 
-@router.get("/ui/api/{path:path}")
+@router.get("/api/ui/{path:path}")
 async def fastui_api_endpoint(path: str, db: db_dependency) -> list[AnyComponent]:
     """Main FastUI API endpoint - routes to different pages"""
 
@@ -236,7 +236,7 @@ def get_login_page() -> list[AnyComponent]:
                 c.Paragraph(text="Sign in to your Solana Pay account"),
                 c.ModelForm(
                     model=LoginForm,
-                    submit_url="/ui/api/login/submit",
+                    submit_url="/api/ui/login/submit",
                     method="POST",
                 ),
                 c.Div(
@@ -264,7 +264,7 @@ def get_register_page() -> list[AnyComponent]:
                 c.Paragraph(text="Create your Solana Pay account"),
                 c.ModelForm(
                     model=RegisterForm,
-                    submit_url="/ui/api/register/submit",
+                    submit_url="/api/ui/register/submit",
                     method="POST",
                 ),
                 c.Div(
@@ -446,7 +446,7 @@ def get_create_product_page() -> list[AnyComponent]:
                 c.Paragraph(text="Add a new product to the catalog"),
                 c.ModelForm(
                     model=ProductForm,
-                    submit_url="/ui/api/product/create",
+                    submit_url="/api/ui/product/create",
                     method="POST",
                 ),
                 c.Link(
@@ -486,7 +486,7 @@ def get_about_page() -> list[AnyComponent]:
     ]
 
 
-@router.post("/ui/api/login/submit")
+@router.post("/api/ui/login/submit")
 async def login_submit(
     form: Annotated[LoginForm, fastui_form(LoginForm)], db: db_dependency
 ) -> list[AnyComponent]:
@@ -516,7 +516,7 @@ async def login_submit(
     ]
 
 
-@router.post("/ui/api/register/submit")
+@router.post("/api/ui/register/submit")
 async def register_submit(
     form: Annotated[RegisterForm, fastui_form(RegisterForm)], db: db_dependency
 ) -> list[AnyComponent]:
@@ -555,7 +555,7 @@ async def register_submit(
     ]
 
 
-@router.post("/ui/api/product/create")
+@router.post("/api/ui/product/create")
 async def create_product_submit(
     form: Annotated[ProductForm, fastui_form(ProductForm)], db: db_dependency
 ) -> list[AnyComponent]:

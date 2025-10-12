@@ -68,7 +68,7 @@ app.include_router(fastui_pages.router, tags=["frontend"])
 @app.get("/ui/{path:path}", response_class=HTMLResponse)
 async def fastui_html(path: str = "") -> HTMLResponse:
     """Serve FastUI frontend HTML"""
-    return HTMLResponse(prebuilt_html(title="Solana Pay", api_root_url="/ui/api/"))
+    return HTMLResponse(prebuilt_html(title="Solana Pay", api_root_url="/api"))
 
 
 # Web routes (Frontend) - Redirects to FastUI
