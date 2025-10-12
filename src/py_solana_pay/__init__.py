@@ -20,11 +20,16 @@ def main() -> None:
     """Main entry point for the application"""
     import uvicorn
 
+    from .logging_config import get_logger, log_app_event
     from .main import app
 
-    print("🔥 py-solana-pay Server")
-    print("💰 Python implementation of Solana-Pay")
-    print("🚀 Starting at http://localhost:8000")
-    print("📖 API docs at http://localhost:8000/docs")
+    logger = get_logger(__name__)
+
+    logger.info("🔥 py-solana-pay Server")
+    logger.info("💰 Python implementation of Solana-Pay")
+    logger.info("🚀 Starting at http://localhost:8000")
+    logger.info("📖 API docs at http://localhost:8000/docs")
+
+    log_app_event("Application main entry point called")
 
     uvicorn.run("py_solana_pay.main:app", host="0.0.0.0", port=8000, reload=True)

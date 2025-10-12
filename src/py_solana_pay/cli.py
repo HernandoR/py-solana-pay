@@ -11,7 +11,10 @@ Usage:
 import argparse
 import sys
 
+from .logging_config import get_logger
 from .solana_integration import solana_pay
+
+logger = get_logger(__name__)
 
 
 def generate_payment_url(args):
@@ -25,13 +28,19 @@ def generate_payment_url(args):
             memo=args.memo,
         )
 
+        # For CLI output, we still need to print to stdout
         print(f"Payment URL: {url}")
+        logger.info(
+            f"Generated payment URL for recipient {args.recipient} amount {args.amount}"
+        )
 
         if args.qr:
             qr_data = solana_pay.generate_qr_code(url)
             print(f"QR Code: {qr_data}")
+            logger.info("Generated QR code for payment URL")
 
     except Exception as e:
+        logger.error(f"Failed to generate payment URL: {e}")
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
@@ -48,15 +57,22 @@ def verify_payment(args):
         if result["verified"]:
             print("✅ Payment verified successfully!")
             print(f"Signature: {args.signature}")
+            logger.info(f"Payment verified successfully for signature {args.signature}")
+
             if "block_time" in result:
                 print(f"Block time: {result['block_time']}")
             if "fee" in result:
                 print(f"Fee: {result['fee']} lamports")
         else:
+            error_msg = result.get("error", "Unknown error")
             print("❌ Payment verification failed!")
-            print(f"Error: {result.get('error', 'Unknown error')}")
+            print(f"Error: {error_msg}")
+            logger.error(
+                f"Payment verification failed for signature {args.signature}: {error_msg}"
+            )
 
     except Exception as e:
+        logger.error(f"Error verifying payment: {e}")
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
@@ -69,11 +85,14 @@ def get_balance(args):
         if balance is not None:
             print(f"Address: {args.address}")
             print(f"Balance: {balance} SOL")
+            logger.info(f"Retrieved balance for address {args.address}: {balance} SOL")
         else:
+            logger.error(f"Could not retrieve balance for {args.address}")
             print(f"Could not retrieve balance for {args.address}")
             sys.exit(1)
 
     except Exception as e:
+        logger.error(f"Error getting balance: {e}")
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 

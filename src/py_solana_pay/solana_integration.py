@@ -10,6 +10,10 @@ from solana.rpc.api import Client
 from solders.pubkey import Pubkey
 from solders.signature import Signature
 
+from .logging_config import get_logger
+
+logger = get_logger(__name__)
+
 
 class SolanaPayUtil:
     """Utility class for Solana Pay operations"""
@@ -148,7 +152,7 @@ class SolanaPayUtil:
                 return response.value / 1e9
 
         except Exception as e:
-            print(f"Error getting balance: {e}")
+            logger.error(f"Error getting balance for address {address}: {e}")
 
         return None
 

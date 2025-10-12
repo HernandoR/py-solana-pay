@@ -94,3 +94,4 @@ logs/
 # Temporary files
 tmp/
 temp/
+solana_pay.db
