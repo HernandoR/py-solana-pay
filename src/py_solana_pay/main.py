@@ -7,13 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastui import prebuilt_html
 
 from .database import Base, engine
 from .logging_config import get_logger
 
 # Import models to ensure tables are created
 # Import routers
-from .routers import accounts, auth, checkout, products, transactions
+from .routers import accounts, auth, checkout, fastui_pages, products, transactions
 
 logger = get_logger(__name__)
 
@@ -62,6 +63,16 @@ app.include_router(
     transactions.router, prefix="/api/transactions", tags=["transactions"]
 )
 app.include_router(checkout.router, prefix="/api/checkout", tags=["checkout"])
+
+# FastUI frontend router
+app.include_router(fastui_pages.router, tags=["frontend"])
+
+
+# FastUI HTML page - serves the React frontend
+@app.get("/ui/{path:path}", response_class=HTMLResponse)
+async def fastui_html(path: str = "") -> HTMLResponse:
+    """Serve FastUI frontend HTML"""
+    return HTMLResponse(prebuilt_html(title="Solana Pay"))
 
 
 # Web routes (Frontend)
