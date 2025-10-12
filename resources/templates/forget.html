@@ -1,0 +1,87 @@
+{# Forgot Password Page - Converted from Thymeleaf to Jinja2 
+   Original: VietBx23/Solona-Pay forget.html 
+#}
+{% extends "base.html" %}
+
+{% block title %}Forgot Password - Solana Pay{% endblock %}
+
+{% block content %}
+<div class="bg-light py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+                <a href="/index.html">Home</a> <span class="mx-2 mb-0">/</span> 
+                <strong class="text-black">Forgot Password</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="site-section">
+    <div class="container">
+        <!-- Form -->
+        <div class="form">
+            <div class="form-toggle"></div>
+            <div class="form-panel one">
+                <div class="form-header">
+                    <h1>Forgot Password</h1>
+                </div>
+                <div class="form-content">
+                    <form action="/api/auth/forgot-password" method="post" id="forgotPasswordForm">
+                        {% if message %}
+                        <p class="text-danger">{{ message }}</p>
+                        {% endif %}
+                        {% if request.args.get('error') %}
+                        <p class="text-danger">Unable to process request</p>
+                        {% endif %}
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input id="email" type="email" name="email" required="required" 
+                                   class="form-control" placeholder="Enter your email address" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary w-100">Send New Password</button>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <a href="/login">Back to Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    try {
+        const response = await fetch('/api/auth/forgot-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(Object.fromEntries(formData))
+        });
+        
+        if (response.ok) {
+            alert('Password reset instructions have been sent to your email.');
+            window.location.href = '/login';
+        } else {
+            alert('Unable to process your request. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+    }
+});
+</script>
+{% endblock %}

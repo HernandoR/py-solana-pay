@@ -1,0 +1,96 @@
+{# Login Page - Converted from Thymeleaf to Jinja2 
+   Original: VietBx23/Solona-Pay login.html 
+#}
+{% extends "base.html" %}
+
+{% block title %}Login - Solana Pay{% endblock %}
+
+{% block content %}
+<div class="bg-light py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+                <a href="/index.html">Home</a> <span class="mx-2 mb-0">/</span> 
+                <strong class="text-black">Login</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="site-section">
+    <div class="container">
+        <!-- Form -->
+        <div class="form">
+            <div class="form-toggle"></div>
+            <div class="form-panel one">
+                <div class="form-header text-center">
+                    <h1>Login</h1>
+                </div>
+                <div class="form-content">
+                    <form action="/api/auth/token" method="post" id="loginForm">
+                        {% if message %}
+                        <p class="text-danger">{{ message }}</p>
+                        {% endif %}
+                        {% if request.args.get('error') %}
+                        <p class="text-danger">Invalid credentials</p>
+                        {% endif %}
+                        
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input id="username" type="text" name="username" required="required" 
+                                   class="form-control" placeholder="Enter your username" />
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input id="password" type="password" name="password" required="required" 
+                                   class="form-control" placeholder="Enter your password" />
+                        </div>
+                        <div class="form-group">
+                            <a class="form-recovery" href="/forget">Forgot Password?</a>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <label>Don't Have Account? </label>
+                            <a href="/register.html" class="ms-2">Sign Up</a>
+                        </div>
+                        <!-- OAuth2 options (commented out, can be enabled later)
+                        <a type="button" class="btn btn-outline-danger w-100 mb-3" href="/oauth2/authorization/google">Google</a>
+                        <a type="button" class="btn btn-outline-primary w-100" href="/oauth2/authorization/facebook">Facebook</a>
+                        -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Client-side form handling can be added here if needed
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    try {
+        const response = await fetch('/api/auth/token', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('auth_token', data.access_token);
+            window.location.href = '/account';
+        } else {
+            alert('Login failed. Please check your credentials.');
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('An error occurred during login.');
+    }
+});
+</script>
+{% endblock %}

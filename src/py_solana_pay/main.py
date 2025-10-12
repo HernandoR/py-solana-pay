@@ -88,6 +88,14 @@ async def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
 
+@app.get("/forget", response_class=HTMLResponse)
+@app.get("/forgetPassword", response_class=HTMLResponse)
+async def forget_password_page(request: Request):
+    """Forgot password page"""
+    logger.info("Forgot password page accessed")
+    return templates.TemplateResponse("forget.html", {"request": request})
+
+
 @app.get("/account", response_class=HTMLResponse)
 async def account_page(request: Request):
     """Account page"""
@@ -117,10 +125,16 @@ async def cart_page(request: Request):
 
 
 @app.get("/shop-single", response_class=HTMLResponse)
-async def shop_single_page(request: Request):
+@app.get("/shop-single/{product_id}", response_class=HTMLResponse)
+async def shop_single_page(request: Request, product_id: int = None):
     """Shop single product page"""
-    logger.info("Shop single page accessed")
-    return templates.TemplateResponse("shop-single.html", {"request": request})
+    logger.info(f"Shop single page accessed for product: {product_id}")
+    # In a real application, fetch product details from database
+    return templates.TemplateResponse("shop-single.html", {
+        "request": request,
+        "product": None,  # Replace with actual product data
+        "related_products": []  # Replace with related products
+    })
 
 
 @app.get("/success", response_class=HTMLResponse)

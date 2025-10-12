@@ -15,18 +15,19 @@ Contains all static frontend files:
 ### Templates (`templates/`)
 HTML templates converted from Thymeleaf to Jinja2:
 - `base.html` - Base layout template (converted from `layout/layout.html`)
-- `index.html` - Homepage
-- `login.html` - Login page
-- `register.html` - Registration page
-- `account.html` - User account page
-- `product.html` - Product listing page
+- `index.html` - Homepage with carousel and features
+- `login.html` - Login page with form validation
+- `register.html` - Registration page with Solana wallet field
+- `account.html` - User account management page (admin)
+- `product.html` - Product listing page with NFT cards
 - `shop-single.html` - Single product detail page
-- `cart.html` - Shopping cart page
-- `about.html` - About page
+- `cart.html` - Shopping cart page with AngularJS integration
+- `about.html` - About page with team information
+- `forget.html` - Forgot password page
 - `success.html` - Payment success page
 - `cancel.html` - Payment cancellation page
 
-**Note**: Original Thymeleaf templates are backed up with `.thymeleaf.bak` extension.
+**Note**: Original Thymeleaf templates are in `templates.thymeleaf/` directory for reference.
 
 ### Configuration (`config.py`)
 Python configuration file that maps Spring Boot `application.properties` to Python/FastAPI equivalents.

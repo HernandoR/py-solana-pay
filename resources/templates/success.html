@@ -1,0 +1,110 @@
+{# Success Page - Converted from Thymeleaf to Jinja2 
+   Original: VietBx23/Solona-Pay success.html 
+#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Successful - Solana Pay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" 
+          rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <style>
+        #success-box {
+            text-align: center;
+            margin: 100px auto;
+            max-width: 500px;
+            padding: 40px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .face {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+            border-radius: 50%;
+            background: #14F195;
+            position: relative;
+        }
+        .eye {
+            width: 15px;
+            height: 15px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 30px;
+            left: 25px;
+        }
+        .eye.right {
+            left: 60px;
+        }
+        .mouth.happy {
+            width: 40px;
+            height: 20px;
+            border: 3px solid white;
+            border-radius: 0 0 40px 40px;
+            border-top: none;
+            position: absolute;
+            bottom: 20px;
+            left: 30px;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: #9945FF;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 5px;
+            animation: bounce 1s infinite;
+        }
+        .dot.two {
+            animation-delay: 0.2s;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .button-box {
+            margin-top: 30px;
+            padding: 12px 40px;
+            background: #14F195;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .button-box:hover {
+            background: #9945FF;
+            transform: scale(1.05);
+        }
+        .button-box a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="success-box">
+            <div class="dot"></div>
+            <div class="dot two"></div>
+            <div class="face">
+                <div class="eye"></div>
+                <div class="eye right"></div>
+                <div class="mouth happy"></div>
+            </div>
+            <div class="message">
+                <h1 class="alert text-success">Purchase Successful!</h1>
+                <p class="congra">Yay, thank you for shopping with Solana Pay!</p>
+            </div>
+            <button class="button-box">
+                <a href="/index.html">Home</a>
+            </button>
+        </div>
+    </div>
+</body>
+</html>

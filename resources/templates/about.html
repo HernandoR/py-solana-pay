@@ -1,0 +1,148 @@
+{# About Page - Converted from Thymeleaf to Jinja2 
+   Original: VietBx23/Solona-Pay about.html 
+#}
+{% extends "base.html" %}
+
+{% block title %}About - Solana Pay{% endblock %}
+
+{% block content %}
+<div class="bg-light py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+                <a href="/index.html">Home</a> <span class="mx-2 mb-0">/</span> 
+                <strong class="text-black">About</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="site-section border-bottom" data-aos="fade">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <div class="block-16">
+                    <figure>
+                        <img src="{{ url_for('static', path='images/m1.webp') }}" alt="Solana Pay" 
+                             class="img-fluid rounded">
+                    </figure>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <div class="site-section-heading pt-3 mb-4">
+                    <h2 class="text-black">How We Started</h2>
+                </div>
+                <p>Solana Pay represents a new era in blockchain-based payment systems. Built on the high-performance Solana blockchain, we provide fast, secure, and cost-effective payment solutions for businesses and individuals worldwide.</p>
+                <p>Our mission is to make cryptocurrency payments as simple and accessible as traditional payment methods, while maintaining the security and transparency that blockchain technology offers.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="site-section border-bottom" data-aos="fade">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-7 site-section-heading text-center pt-4">
+                <h2>The Team</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-lg-3">
+                <div class="block-38 text-center">
+                    <div class="block-38-img">
+                        <div class="block-38-header">
+                            <img src="{{ url_for('static', path='images/person_1.jpg') }}" 
+                                 alt="Phạm Trung Hiếu" class="mb-4">
+                            <h3 class="block-38-heading h4">Phạm Trung Hiếu</h3>
+                            <p class="block-38-subheading">Trưởng nhóm</p>
+                        </div>
+                        <div class="block-38-body">
+                            <p>Team lead with extensive experience in blockchain technology and payment systems. Passionate about creating innovative solutions for decentralized finance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="block-38 text-center">
+                    <div class="block-38-img">
+                        <div class="block-38-header">
+                            <img src="{{ url_for('static', path='images/person_2.jpg') }}" 
+                                 alt="Huỳnh Đức Hoàn" class="mb-4">
+                            <h3 class="block-38-heading h4">Huỳnh Đức Hoàn</h3>
+                            <p class="block-38-subheading">Thành viên</p>
+                        </div>
+                        <div class="block-38-body">
+                            <p>Backend developer specializing in distributed systems and blockchain integration. Focused on building scalable and secure payment infrastructure.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="block-38 text-center">
+                    <div class="block-38-img">
+                        <div class="block-38-header">
+                            <img src="{{ url_for('static', path='images/person_3.jpg') }}" 
+                                 alt="Bùi Xuân Việt" class="mb-4">
+                            <h3 class="block-38-heading h4">Bùi Xuân Việt</h3>
+                            <p class="block-38-subheading">Thành viên</p>
+                        </div>
+                        <div class="block-38-body">
+                            <p>Frontend developer with expertise in creating user-friendly interfaces for blockchain applications. Committed to delivering exceptional user experiences.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="block-38 text-center">
+                    <div class="block-38-img">
+                        <div class="block-38-header">
+                            <img src="{{ url_for('static', path='images/person_4.jpg') }}" 
+                                 alt="Phạm Đăng Nguyên" class="mb-4">
+                            <h3 class="block-38-heading h4">Phạm Đăng Nguyên</h3>
+                            <p class="block-38-subheading">Thành viên</p>
+                        </div>
+                        <div class="block-38-body">
+                            <p>Full-stack developer with a passion for web3 technologies. Dedicated to bridging the gap between traditional and decentralized payment systems.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="site-section site-section-sm site-blocks-1 border-0" data-aos="fade">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4" data-aos="fade-up" data-aos-delay="">
+                <div class="icon mr-4 align-self-start">
+                    <span class="icon-truck"></span>
+                </div>
+                <div class="text">
+                    <h2 class="text-uppercase">Fast Transactions</h2>
+                    <p>Experience lightning-fast transactions on the Solana blockchain with near-instant confirmation times.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="icon mr-4 align-self-start">
+                    <span class="icon-refresh2"></span>
+                </div>
+                <div class="text">
+                    <h2 class="text-uppercase">Low Fees</h2>
+                    <p>Enjoy minimal transaction fees that make micropayments and regular transactions cost-effective.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="icon mr-4 align-self-start">
+                    <span class="icon-help"></span>
+                </div>
+                <div class="text">
+                    <h2 class="text-uppercase">24/7 Support</h2>
+                    <p>Our dedicated support team is available around the clock to assist you with any questions or issues.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

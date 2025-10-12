@@ -1,0 +1,85 @@
+{# Product Detail Page - Converted from Thymeleaf to Jinja2 
+   Original: VietBx23/Solona-Pay shop-single.html 
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ product.name if product else 'Product Detail' }} - Solana Pay{% endblock %}
+
+{% block content %}
+<div class="container custom-body-style">
+    <div class="card-single" style="background-color: #111111;">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <img alt="{{ product.name if product else 'Product' }}" 
+                         class="img" 
+                         src="{{ url_for('static', path='images/' + (product.image if product else 'placeholder.jpg')) }}">
+                </div>
+                <div class="col-md-8">
+                    <div class="text text-white h2">
+                        {{ product.name if product else 'Product Name' }}
+                    </div>
+                    <div class="price">
+                        <div class="price1 text-primary h3">
+                            {{ product.price if product else '0.00' }} SOL
+                        </div>
+                    </div>
+                    <span class="quantity text-white">Quantity: </span>
+                    <input class="mt-3" min="1" 
+                           name="count" ng-init="quantity = 1" ng-model="quantity" 
+                           style="width: 60px;" type="number"/>
+                    
+                    <div class="sale mt-4 p-3" style="background-color: #222;">
+                        <div class="title text-white fw-bold">Promotion:</div>
+                        <div class="content text-white">Buy from 100 products: Get 10% discount</div>
+                    </div>
+                    
+                    <div class="pay mt-4">
+                        <a class="mt-3 mb-3 add-to-cart btn btn-sm btn-primary" 
+                           ng-click="cart.add({{ product.id if product else 0 }}); saveToLocalStorage()" 
+                           style="color: white">Add To Cart</a>
+                        <a class="mt-3 mb-3 buy-now btn btn-sm btn-success" 
+                           ng-click="buyNow({{ product.id if product else 0 }})" 
+                           style="color: white">Buy Now</a>
+                        <a class="mt-3 mb-3 continue-shopping btn btn-sm btn-secondary" 
+                           href="/product" 
+                           style="color: white">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-more mt-5">
+        <div class="card-body-more">
+            <div class="text text-white h3 mb-4">Other Products</div>
+            <div class="row">
+                {% if related_products %}
+                    {% for related in related_products %}
+                    <div class="col-md-3">
+                        <a href="/shop-single/{{ related.id }}">
+                            <img alt="{{ related.name }}" class="img-more img-fluid" 
+                                 src="{{ url_for('static', path='images/' + related.image) }}">
+                            <div class="name text-white">{{ related.name }}</div>
+                            <div class="price-more text-primary">{{ related.price }} SOL</div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-white">No related products available</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function buyNow(productId) {
+    // Add to cart and redirect to checkout
+    cart.add(productId);
+    window.location.href = '/cart';
+}
+</script>
+{% endblock %}

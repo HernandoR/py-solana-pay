@@ -1,0 +1,148 @@
+{# Account Management Page - Converted from Thymeleaf to Jinja2 
+   Original: VietBx23/Solona-Pay account.html 
+#}
+{% extends "base.html" %}
+
+{% block title %}Account Management - Solana Pay{% endblock %}
+
+{% block content %}
+<div class="bg-light py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+                <a href="/index.html">Home</a> <span class="mx-2 mb-0">/</span> 
+                <strong class="text-black">Admin</strong> <span class="mx-2 mb-0">/</span> 
+                <strong class="text-black">Accounts</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="px-5">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="site-section">
+                <div class="form-group">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="text-black">
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Activated</th>
+                                <th>Admin</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if accounts %}
+                                {% for account in accounts %}
+                                <tr>
+                                    <td>{{ account.username }}</td>
+                                    <td>********</td>
+                                    <td>{{ account.fullname }}</td>
+                                    <td>{{ account.email }}</td>
+                                    <td>{{ 'Yes' if account.activated else 'No' }}</td>
+                                    <td>{{ 'Yes' if account.admin else 'No' }}</td>
+                                    <td><a class="link-warning" href="/account/edit/{{ account.username }}">Edit</a></td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No accounts found</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="site-section">
+                <form action="/api/accounts/" method="post" id="accountForm">
+                    <div class="p-3 p-lg-5 border">
+                        <h3 class="mb-4">{% if item and item.username %}Edit{% else %}Create{% endif %} Account</h3>
+                        
+                        <label class="form-label">Username</label>
+                        <input type="text" id="username" class="form-control" 
+                               name="username" value="{{ item.username if item else '' }}" required>
+                        
+                        <label for="inputPassword" class="form-label">Password</label>
+                        <input type="password" id="password" class="form-control" 
+                               name="password" required>
+                        
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="fullname" class="form-control" 
+                               name="fullname" value="{{ item.fullname if item else '' }}" required>
+                        
+                        <label for="exampleInputEmail1" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" 
+                               name="email" value="{{ item.email if item else '' }}" required>
+                        
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" 
+                                   id="activated" name="activated" 
+                                   {{ 'checked' if item and item.activated else '' }}>
+                            <label class="form-check-label" for="activated">Activated</label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" 
+                                   id="admin" name="admin" 
+                                   {{ 'checked' if item and item.admin else '' }}>
+                            <label class="form-check-label" for="admin">Admin</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary mt-3 w-100">
+                            {% if item and item.username %}Update{% else %}Create{% endif %}
+                        </button>
+                        
+                        {% if item and item.username %}
+                        <button type="button" class="btn btn-secondary mt-2 w-100" 
+                                onclick="window.location.href='/account'">Cancel</button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('accountForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    // Convert checkboxes to boolean
+    data.activated = formData.get('activated') === 'on';
+    data.admin = formData.get('admin') === 'on';
+    
+    try {
+        const response = await fetch('/api/accounts/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('auth_token')
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            alert('Account saved successfully');
+            window.location.reload();
+        } else {
+            alert('Failed to save account');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
+    }
+});
+</script>
+{% endblock %}
