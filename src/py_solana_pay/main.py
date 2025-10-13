@@ -88,6 +88,16 @@ async def fastui_html() -> HTMLResponse:
     return HTMLResponse(prebuilt_html(title="Solana Pay", api_root_url="/api"))
 
 
+# 404 Error handler
+@app.exception_handler(404)
+async def not_found_handler(request, exc):
+    """Handle 404 errors with a custom message"""
+    return HTMLResponse(
+        content="<h1>404 Not Found</h1><p>The requested resource was not found on the server.</p>",
+        status_code=404,
+    )
+
+
 if __name__ == "__main__":
     import uvicorn
 

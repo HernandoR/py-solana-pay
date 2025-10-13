@@ -3,7 +3,7 @@
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends
-from fastui import AnyComponent
+from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.events import AuthEvent, GoToEvent, PageEvent
 from fastui.forms import fastui_form
@@ -59,56 +59,64 @@ db_dependency = Annotated[Session, Depends(get_db)]
 optional_user_dependency = Annotated[Optional[Account], Depends(lambda: None)]
 
 
-@router.get("/api/")
-@router.get("/api/index")
+@router.get("/api/", response_model=FastUI, response_model_exclude_none=True)
+@router.get("/api/index", response_model=FastUI, response_model_exclude_none=True)
 async def fastui_api_index(db: db_dependency) -> list[AnyComponent]:
     """Homepage component"""
     return get_index_page()
 
 
-@router.get("/api/login")
+@router.get("/api/login", response_model=FastUI, response_model_exclude_none=True)
 async def fastui_api_login() -> list[AnyComponent]:
     """Login page component"""
     return get_login_page()
 
 
-@router.get("/api/register")
+@router.get("/api/register", response_model=FastUI, response_model_exclude_none=True)
 async def fastui_api_register() -> list[AnyComponent]:
     """Register page component"""
     return get_register_page()
 
 
-@router.get("/api/products")
+@router.get("/api/products", response_model=FastUI, response_model_exclude_none=True)
 async def fastui_api_products(db: db_dependency) -> list[AnyComponent]:
     """Products page component"""
     return get_products_page(db)
 
 
-@router.get("/api/product/{product_id}")
-async def fastui_api_product_detail(product_id: int, db: db_dependency) -> list[AnyComponent]:
+@router.get(
+    "/api/product/{product_id}", response_model=FastUI, response_model_exclude_none=True
+)
+async def fastui_api_product_detail(
+    product_id: int, db: db_dependency
+) -> list[AnyComponent]:
     """Product detail page component"""
     return get_product_detail_page(db, product_id)
 
 
-@router.get("/api/about")
+@router.get("/api/about", response_model=FastUI, response_model_exclude_none=True)
 async def fastui_api_about() -> list[AnyComponent]:
     """About page component"""
     return get_about_page()
 
 
-@router.get("/api/account")
+@router.get("/api/account", response_model=FastUI, response_model_exclude_none=True)
 async def fastui_api_account() -> list[AnyComponent]:
     """Account page component"""
     return get_account_page()
 
 
-@router.get("/api/transactions")
+@router.get(
+    "/api/transactions", response_model=FastUI, response_model_exclude_none=True
+)
 async def fastui_api_transactions() -> list[AnyComponent]:
     """Transactions page component"""
     return get_transactions_page()
 
 
-@router.get("/api/create-product")
+@router.get(
+    "/api/create-product", response_model=FastUI, response_model_exclude_none=True
+)
 async def fastui_api_create_product() -> list[AnyComponent]:
     """Create product page component"""
     return get_create_product_page()
@@ -502,7 +510,9 @@ def get_about_page() -> list[AnyComponent]:
     ]
 
 
-@router.post("/api/login/submit")
+@router.post(
+    "/api/login/submit", response_model=FastUI, response_model_exclude_none=True
+)
 async def login_submit(
     form: Annotated[LoginForm, fastui_form(LoginForm)], db: db_dependency
 ) -> list[AnyComponent]:
@@ -532,7 +542,9 @@ async def login_submit(
     ]
 
 
-@router.post("/api/register/submit")
+@router.post(
+    "/api/register/submit", response_model=FastUI, response_model_exclude_none=True
+)
 async def register_submit(
     form: Annotated[RegisterForm, fastui_form(RegisterForm)], db: db_dependency
 ) -> list[AnyComponent]:
@@ -571,7 +583,9 @@ async def register_submit(
     ]
 
 
-@router.post("/api/product/create")
+@router.post(
+    "/api/product/create", response_model=FastUI, response_model_exclude_none=True
+)
 async def create_product_submit(
     form: Annotated[ProductForm, fastui_form(ProductForm)], db: db_dependency
 ) -> list[AnyComponent]:
