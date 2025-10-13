@@ -37,7 +37,7 @@ class TransactionResponse(TransactionBase):
         from_attributes = True
 
 
-@router.get("/", response_model=List[TransactionResponse])
+@router.get("", response_model=List[TransactionResponse])
 async def get_transactions(
     skip: int = 0,
     limit: int = 100,
@@ -92,7 +92,7 @@ async def get_transaction(
     return transaction
 
 
-@router.post("/", response_model=TransactionResponse)
+@router.post("", response_model=TransactionResponse)
 async def create_transaction(
     transaction: TransactionCreate,
     db: Session = db_dependency,

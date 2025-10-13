@@ -33,7 +33,7 @@ class AccountUpdate(BaseModel):
     wallet_key: str = None
 
 
-@router.get("/", response_model=List[AccountResponse])
+@router.get("", response_model=List[AccountResponse])
 async def get_accounts(skip: int = 0, limit: int = 100, db: Session = db_dependency):
     """Get all accounts (admin only)"""
     accounts = db.query(Account).offset(skip).limit(limit).all()

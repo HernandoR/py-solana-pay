@@ -2,18 +2,18 @@
 
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from fastui import prebuilt_html
 
 from .database import Base, engine
 from .logging_config import get_logger
 
 # Import models to ensure tables are created
 # Import routers
-from .routers import accounts, auth, checkout, products, transactions
+from .routers import accounts, auth, checkout, fastui_pages, products, transactions
 
 logger = get_logger(__name__)
 
@@ -29,7 +29,7 @@ app = FastAPI(
 # Get project root directory
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
-# Mount static files from resources directory (contains frontend assets from VietBx23/Solona-Pay)
+# Mount static files from resources directory (for any remaining static assets)
 RESOURCES_DIR = PROJECT_ROOT / "resources"
 if (RESOURCES_DIR / "static").exists():
     app.mount("/static", StaticFiles(directory=RESOURCES_DIR / "static"), name="static")
@@ -37,13 +37,10 @@ if (RESOURCES_DIR / "static").exists():
 else:
     # Fallback to original static directory if resources not available
     if (PROJECT_ROOT / "static").exists():
-        app.mount("/static", StaticFiles(directory=PROJECT_ROOT / "static"), name="static")
+        app.mount(
+            "/static", StaticFiles(directory=PROJECT_ROOT / "static"), name="static"
+        )
         logger.info(f"Mounted static files from {PROJECT_ROOT / 'static'}")
-
-# Setup templates from resources directory (Thymeleaf templates converted to Jinja2)
-TEMPLATES_DIR = RESOURCES_DIR / "templates" if (RESOURCES_DIR / "templates").exists() else PROJECT_ROOT / "templates"
-templates = Jinja2Templates(directory=TEMPLATES_DIR)
-logger.info(f"Using templates from {TEMPLATES_DIR}")
 
 # Configure CORS
 app.add_middleware(
@@ -54,104 +51,51 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
+# Include routers - order matters for route matching
+# Data APIs with specific prefixes
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
-app.include_router(accounts.router, prefix="/api/accounts", tags=["accounts"])
-app.include_router(products.router, prefix="/api/products", tags=["products"])
+app.include_router(accounts.router, prefix="/api/data/accounts", tags=["accounts"])
+app.include_router(products.router, prefix="/api/data/products", tags=["products"])
 app.include_router(
-    transactions.router, prefix="/api/transactions", tags=["transactions"]
+    transactions.router, prefix="/api/data/transactions", tags=["transactions"]
 )
 app.include_router(checkout.router, prefix="/api/checkout", tags=["checkout"])
 
-
-# Web routes (Frontend)
-@app.get("/", response_class=HTMLResponse)
-@app.get("/index.html", response_class=HTMLResponse)
-async def index(request: Request):
-    """Homepage - using resources from VietBx23/Solona-Pay"""
-    logger.info("Homepage accessed")
-    return templates.TemplateResponse("index.html", {"request": request})
+# FastUI frontend router (includes /api/* for components)
+app.include_router(fastui_pages.router, tags=["frontend"])
 
 
-@app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    """Login page"""
-    logger.info("Login page accessed")
-    return templates.TemplateResponse("login.html", {"request": request})
-
-
-@app.get("/register", response_class=HTMLResponse)
-@app.get("/register.html", response_class=HTMLResponse)
-async def register_page(request: Request):
-    """Registration page"""
-    logger.info("Registration page accessed")
-    return templates.TemplateResponse("register.html", {"request": request})
-
-
-@app.get("/account", response_class=HTMLResponse)
-async def account_page(request: Request):
-    """Account page"""
-    logger.info("Account page accessed")
-    return templates.TemplateResponse("account.html", {"request": request})
-
-
-@app.get("/about", response_class=HTMLResponse)
-async def about_page(request: Request):
-    """About page"""
-    logger.info("About page accessed")
-    return templates.TemplateResponse("about.html", {"request": request})
-
-
-@app.get("/product", response_class=HTMLResponse)
-async def product_page(request: Request):
-    """Product page"""
-    logger.info("Product page accessed")
-    return templates.TemplateResponse("product.html", {"request": request})
-
-
-@app.get("/cart", response_class=HTMLResponse)
-async def cart_page(request: Request):
-    """Shopping cart page"""
-    logger.info("Cart page accessed")
-    return templates.TemplateResponse("cart.html", {"request": request})
-
-
-@app.get("/shop-single", response_class=HTMLResponse)
-async def shop_single_page(request: Request):
-    """Shop single product page"""
-    logger.info("Shop single page accessed")
-    return templates.TemplateResponse("shop-single.html", {"request": request})
-
-
-@app.get("/success", response_class=HTMLResponse)
-async def success_page(request: Request):
-    """Payment success page"""
-    logger.info("Success page accessed")
-    return templates.TemplateResponse("success.html", {"request": request})
-
-
-@app.get("/cancel", response_class=HTMLResponse)
-async def cancel_page(request: Request):
-    """Payment cancel page"""
-    logger.info("Cancel page accessed")
-    return templates.TemplateResponse("cancel.html", {"request": request})
-
-
-@app.get("/api")
-async def api_root():
-    """API root endpoint"""
-    return {
-        "message": "Welcome to py-solana-pay API!",
-        "description": "Python implementation of Solana-Pay - A blockchain payment system",
-        "version": "0.1.0",
-        "docs": "/docs",
-    }
-
-
+# Health check endpoint
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy"}
+
+
+# FastUI HTML pages - specific routes for each page
+@app.get("/", response_class=HTMLResponse)
+@app.get("/index", response_class=HTMLResponse)
+@app.get("/login", response_class=HTMLResponse)
+@app.get("/register", response_class=HTMLResponse)
+@app.get("/products", response_class=HTMLResponse)
+@app.get("/product/{product_id}", response_class=HTMLResponse)
+@app.get("/about", response_class=HTMLResponse)
+@app.get("/account", response_class=HTMLResponse)
+@app.get("/transactions", response_class=HTMLResponse)
+@app.get("/create-product", response_class=HTMLResponse)
+async def fastui_html() -> HTMLResponse:
+    """Serve FastUI frontend HTML"""
+    return HTMLResponse(prebuilt_html(title="Solana Pay", api_root_url="/api"))
+
+
+# 404 Error handler
+@app.exception_handler(404)
+async def not_found_handler(request, exc):
+    """Handle 404 errors with a custom message"""
+    return HTMLResponse(
+        content="<h1>404 Not Found</h1><p>The requested resource was not found on the server.</p>",
+        status_code=404,
+    )
 
 
 if __name__ == "__main__":
